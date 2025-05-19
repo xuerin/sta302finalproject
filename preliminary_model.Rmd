@@ -47,7 +47,7 @@ summary(model)
 ```
 
 # Residual plots
-```{r,message=FALSE, echo=FALSE,warning=FALSE}
+```{r message=FALSE, echo=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(model)
 ```
