@@ -1,0 +1,35 @@
+---
+title: "preliminary_model"
+author: "Erin Xu"
+date: "2025-05-19"
+output: html_document
+---
+
+```{r, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra")
+lapply(packages, require, character.only = T)
+set.seed(420)
+```
+
+Load data and check if needed to clean. 
+```{r, echo=FALSE}
+all_data <- read.csv("water_pollution_disease.csv", na.strings = c("", "NA"))
+anyNA(all_data)
+sum(is.na(all_data))
+colSums(is.na(all_data))
+```
+
+Get the response and predictors. 
+Note haven't done the predictors for the categorical. 
+```{r echo=FALSE}
+response <- all_data$Diarrheal.Cases.per.100.000.people
+x0 <- all_data$Contaminant.Level..ppm.
+x1 <- all_data$Bacteria.Count..CFU.mL.
+x2 <- all_data$Sanitation.Coverage....of.Population.
+x3 <- all_data$GDP.per.Capita..USD.
+x4 <- all_data$Access.to.Clean.Water....of.Population.
+x5 <- all_data$Healthcare.Access.Index..0.100.
+
+summary(lm(response ~ x0 + x1 + x2 + x3 + x4 + x5, data=all_data))
+```
