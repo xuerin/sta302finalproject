@@ -20,6 +20,9 @@ sum(is.na(all_data))
 colSums(is.na(all_data))
 ```
 
+Check for regression assumptions. 
+```{r, echo=FALSE}
+```
 Get the response and predictors. 
 Note haven't done the predictors for the categorical. 
 ```{r echo=FALSE}
