@@ -81,9 +81,6 @@ all_data$Status <- as.factor(all_data$Status)
 
 model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
-par(mfrow = c(2, 2))
-plot(model)
-
 ```
 
 # Residual plots
@@ -91,7 +88,6 @@ plot(model)
 par(mfrow = c(2, 2))
 plot(model)
 ```
-
 
 
 
