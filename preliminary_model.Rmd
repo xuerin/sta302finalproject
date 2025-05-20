@@ -91,3 +91,80 @@ plot(model)
 par(mfrow = c(2, 2))
 plot(model)
 ```
+
+
+
+
+################# Life_Expectancy_Data #############################
+####################################################################
+####################################################################
+
+
+---
+title: "preliminary_model"
+author: "Erin Xu & Dora Dong"
+date: "2025-05-19"
+output: html_document
+---
+  
+```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra")
+lapply(packages, require, character.only = TRUE)
+set.seed(420)
+```
+
+# Load data and check if needed to clean. 
+```{r, echo=FALSE}
+all_data <- read.csv("Life_Expectancy_Data.csv", na.strings = c("", "NA"))
+anyNA(all_data)
+sum(is.na(all_data))
+colSums(is.na(all_data))
+
+# clean data
+``` {r echo=FALSE}
+all_data <- read.csv("Life_Expectancy_Data.csv", na.strings = c("", "NA"))
+all_data <- na.omit(all_data) 
+```
+
+## Get the response and predictors. 
+
+```{r echo=FALSE}
+response <- all_data$Life.expectancy
+x0 <- all_data$Adult.Mortality
+x1 <- all_data$Schooling
+x2 <- all_data$Income.composition.of.resources
+x3 <- all_data$percentage.expenditure
+x4 <- all_data$Diphtheria
+x5 <- all_data$Polio
+x6 <- all_data$Alcohol
+x7 <- all_data$BMI
+
+all_data$Status <- as.factor(all_data$Status)
+
+model <- lm(response ~ x0 + x1 + x2 + x3 + x4 + x5 + x6 + x7 + Status, data=all_data)
+summary(model)
+```
+
+# Residual plots
+```{r,message=FALSE, echo=FALSE,warning=FALSE}
+par(mfrow = c(2, 2))
+plot(model)
+```
+
+
+
+#hsfjhdkffjksdfjhhjskdf
+
+
+
+
+
+
+
+
+
+
+
+
+
