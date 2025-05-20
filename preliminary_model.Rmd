@@ -7,14 +7,14 @@ output: html_document
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra")
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps")
 lapply(packages, require, character.only = T)
 set.seed(420)
 ```
 
 # Load data and check if needed to clean. 
 ```{r, echo=FALSE}
-all_data <- read.csv("water_pollution_disease.csv", na.strings = c("", "NA"))
+all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
 sum(is.na(all_data))
 colSums(is.na(all_data))
@@ -24,26 +24,66 @@ colSums(is.na(all_data))
 ```{r, echo=FALSE}
 ```
 # clean data
-``` {r echo=FALSE}
-all_data <- read.csv("water_pollution_disease.csv", na.strings = c("", "NA"))
+
+```{r echo=FALSE}
+all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 all_data <- na.omit(all_data) 
+```
+
+# Decide predictors 
+```{r echo=FALSE}
+
+all_data <- read.csv("life_expectancy.csv")
+all_data <- na.omit(all_data)
+
+all_data$Status <- as.factor(all_data$Status)
+
+
+# Clean model
+full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + infant.deaths + Alcohol +
+                   percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
+                   Total.expenditure + Diphtheria + HIV.AIDS + Population +
+                   thinness..1.19.years + thinness.5.9.years +
+                   Income.composition.of.resources + Schooling,
+                 data = all_data)
+summary(full_model)
+
+step_model <- step(full_model, direction = "both")
+summary(step_model)
+
+# Best subset selection
+best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infant.deaths + Alcohol +
+                           percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
+                           Total.expenditure + Diphtheria + HIV.AIDS + Population +
+                           thinness..1.19.years + thinness.5.9.years +
+                           Income.composition.of.resources + Schooling,
+                         data = all_data, nvmax = 10)
+
+# Summary and plot
+best_summary <- summary(best_model)
+plot(best_model, scale = "adjr2")
+
+
 ```
 
 # Get the response and predictors. 
 ```{r echo=FALSE}
-response <- all_data$Diarrheal.Cases.per.100.000.people
-x0 <- all_data$Contaminant.Level..ppm.
-x1 <- all_data$Bacteria.Count..CFU.mL.
-x2 <- all_data$Sanitation.Coverage....of.Population.
-x3 <- all_data$GDP.per.Capita..USD.
-x4 <- all_data$Access.to.Clean.Water....of.Population.
-x5 <- all_data$Healthcare.Access.Index..0.100.
+all_data <- read.csv("life_expectancy.csv")
+all_data <- na.omit(all_data)
+response <- all_data$GDP
+x0 <- all_data$percentage.expenditure
+x1 <- all_data$Polio
+x2 <- all_data$Total.expenditure
+x3 <- all_data$Income.composition.of.resources
+x4 <- all_data$Schooling
 
-all_data$Water_Treatment_Method <- as.factor(all_data$Water.Treatment.Method)
-all_data$Water_Source_Type <- as.factor(all_data$Water.Source.Type)
+all_data$Status <- as.factor(all_data$Status)
 
-model <- lm(response ~ x0 + x1 + x2 + x3 + x4 + x5 + Water_Treatment_Method + Water_Source_Type, data=all_data)
+model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
+par(mfrow = c(2, 2))
+plot(model)
+
 ```
 
 # Residual plots
