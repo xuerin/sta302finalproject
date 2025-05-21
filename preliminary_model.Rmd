@@ -23,12 +23,6 @@ colSums(is.na(all_data))
 # Check for regression assumptions. 
 ```{r, echo=FALSE}
 ```
-# clean data
-
-```{r echo=FALSE}
-all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
-all_data <- na.omit(all_data) 
-```
 
 # Decide predictors 
 ```{r echo=FALSE}
@@ -50,8 +44,10 @@ summary(full_model)
 
 step_model <- step(full_model, direction = "both")
 summary(step_model)
+```
 
 # Best subset selection
+```{r echo=FALSE}
 best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infant.deaths + Alcohol +
                            percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
                            Total.expenditure + Diphtheria + HIV.AIDS + Population +
@@ -62,8 +58,6 @@ best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infa
 # Summary and plot
 best_summary <- summary(best_model)
 plot(best_model, scale = "adjr2")
-
-
 ```
 
 # Get the response and predictors. 
