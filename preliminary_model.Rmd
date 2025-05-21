@@ -66,7 +66,9 @@ We decided on
 ```{r echo=FALSE}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
-response <- all_data$GDP
+all_data$log_GDP <- log(all_data$GDP)
+
+response <- all_data$log_GDP
 x0 <- all_data$percentage.expenditure
 x1 <- all_data$Polio
 x2 <- all_data$Population
