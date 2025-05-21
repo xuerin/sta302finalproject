@@ -1,12 +1,74 @@
 ---
-title: "Can GDP be predicted by standard of living factors?"
-author: "Erin Xu & Dora Dong"
+title: "Modeling GDP Using Health and Socioeconomic Indicators"
+author: "Erin Xu, Dora Dong, Shencen Cai, Sharon Lam"
 date: "2025-05-19"
 output: 
   pdf_document:
     extra_dependencies: ["bbm"]
 urlcolor: blue
 ---
+# Contributions
+**Introduction:** Sharon Lam
+
+**Data Description:** Shencen Cai
+
+**Preliminary Results:** Erin Xu, Dora Dong
+
+**Bibliography:** Everyone 
+
+# Introduction
+&nbsp; Gross domestic product (GDP) is a widely used measure of a country’s economic output, representing the total market value of goods and services produced within its borders over a specified period. It serves as a key indicator of national economic performance and enables comparison across countries and time periods. By standard economic theory, GDP is influenced by components such as consumer spending, government expenditures, investment in capital goods, and net exports. In addition, factors like human capital, infrastructure, technological innovation, and political stability are considered critical for long-term economic growth (Solow, 1956).
+
+&nbsp; This project applies multiple linear regression (MLR) to investigate the extent to which health-related and socioeconomic factors are associated with GDP, with the research question being: *To what extent do government spending on health and socioeconomic resources affect a country’s GDP?* Specifically, country status (developed vs. developing), percentage expenditure on health, polio immunization coverage, income composition of resources, years of schooling, and population are used as predictors. These variables, comprising both continuous and categorical data, are examined for their ability to explain cross-country variation in GDP. Health spending, represented by expenditure and immunization coverage, has been shown to enhance productivity, while income composition and national development status reflect broader socioeconomic conditions. Education and population are also recognized as structural drivers of economic capacity.
+
+&nbsp; Estimating a linear model facilitates the quantification of each predictor’s contribution to GDP while accounting for the influence of other variables. As economic theory suggests a positive relationship between GDP and improved development indicators, the application of MLR is appropriate for this context. The focus of the analysis is on interpretability, aiming to understand how each factor relates to economic output and to support evidence-based approaches to development and policy planning.
+
+# Data Description
+&nbsp; The dataset used in this project is titled *Life Expectancy* (WHO), sourced from *Kaggle* (Kumar, 2018). Its primary usage is for health data analysis. Data collectors combined publicly available data from the *World Health Organization* (WHO) and the *United Nations* (UN), which were gathered through national health departments, structured questionnaires, and annual statistical submissions by participating countries (World Health Organization, n.d.; United Nations, n.d.).
+
+&nbsp; While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.
+
+&nbsp; Multiple linear regression is an appropriate method for analysis, as the dataset consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.
+
+
+Table 1: Variables used in the model
+
+| **Variables**                   | **Description**                                                                 |
+|--------------------------------|---------------------------------------------------------------------------------|
+| GDP                            | Gross Domestic Product per capita (USD)                                        |
+| Status                         | Developed or Developing status                                                 |
+| Percentage expenditure         | Expenditure on health as a percentage of Gross Domestic Product per capita (%) |
+| Polio                          | Polio immunization coverage among 1-year-olds (%)                              |
+| Population                     | Population of the country                                                      |
+| Income composition of resources| Human Development Index in terms of income composition (index from 0 to 1)     |
+| Schooling                      | Number of years of schooling (years)                                           |
+\
+
+Table 2: Continuous variables summary
+
+| Variable                         |   Mean   |   Std   |   Min   |   Q1   | Median |   Q3   |   Max    |
+|----------------------------------|----------|---------|---------|--------|--------|--------|----------|
+| GDP                              | 7284.31  | 14027.92| 1.68    | 1400.69| 2654.32| 6891.00| 119172.74|
+| Percentage expenditure           | 4.28     | 3.76    | 0.01    | 1.32   | 3.45   | 6.33   | 87.60    |
+| Polio                            | 82.53    | 23.58   | 0.00    | 78.00  | 91.00  | 97.00  | 100.00   |
+| Population                       | 3.38e+07 | 1.19e+08| 366.00  | 3.35e+06|1.26e+07|3.88e+07|1.36e+09  |
+| Income composition of resources  | 0.63     | 0.15    | 0.00    | 0.54   | 0.67   | 0.76   | 0.95     |
+| Schooling                        | 10.30    | 2.98    | 0.00    | 8.00   | 10.30  | 12.43  | 20.00    |
+\
+
+Table 3: Status (categorical variable) frequency
+
+| Status     | Frequency |
+|------------|-----------|
+| Developing | 2426      |
+| Developed  | 512       |
+| **Total**  | 2938      |
+\
+
+Figure 1: Scatter plots of GDP against numeric predictors
+
+
+# Preliminary Results
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
@@ -172,3 +234,4 @@ std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
 
 (qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
 ```
+# Bibliography
