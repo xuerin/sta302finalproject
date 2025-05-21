@@ -84,7 +84,6 @@ plot(model)
 ```
 
 # Residual VS each predictor
-
 ```{r,message=FALSE, echo=FALSE,warning=FALSE}
 
 library(ggplot2)
@@ -127,5 +126,17 @@ p6 <- ggplot(df, aes(x = as.factor(Status), y = residuals)) +
        y = "Residuals")
 
 (p1 | p2 | p3) / (p4 | p5 | p6)
+```
+
+
+# Residual VS Fitted plot
+```{r,message=FALSE, echo=FALSE,warning=FALSE}
+ggplot(all_data, aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.6, color = "steelblue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs Fitted Values",
+       x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
 ```
 
