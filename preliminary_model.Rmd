@@ -88,7 +88,7 @@ plot(model)
 ```{r,message=FALSE, echo=FALSE,warning=FALSE}
 
 library(ggplot2)
-
+library(patchwork)
 
 all_data$residuals <- resid(model)
 all_data$fitted <- fitted(model)
@@ -126,11 +126,6 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
        x = "Status",
        y = "Residuals")
 
-p1
-p2
-p3
-p4
-p5
-p6
+(p1 | p2 | p3) / (p4 | p5 | p6)
 ```
 
