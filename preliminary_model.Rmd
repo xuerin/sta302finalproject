@@ -1,5 +1,5 @@
 ---
-title: "preliminary_model"
+title: "Can GDP be predicted by standard of living factors?"
 author: "Erin Xu & Dora Dong"
 date: "2025-05-19"
 output: 
@@ -9,13 +9,14 @@ urlcolor: blue
 ---
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
-packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps", "ggplot2", "patchwork")
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
+              "kableExtra", "leaps", "ggplot2", "patchwork")
 lapply(packages, require, character.only = T)
 set.seed(420)
 ```
 
 # Load data and check if needed to clean. 
-```{r, echo=FALSE}
+```{r}
 all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
 sum(is.na(all_data))
@@ -23,7 +24,7 @@ colSums(is.na(all_data))
 ```
 
 # Decide predictors 
-```{r include=FALSE, echo=FALSE}
+```{r eval=FALSE}
 
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
@@ -32,8 +33,9 @@ all_data$Status <- as.factor(all_data$Status)
 
 
 # Clean model
-full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + infant.deaths + Alcohol +
-                   percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
+full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
+                   infant.deaths + Alcohol + percentage.expenditure + 
+                   Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
                    Total.expenditure + Diphtheria + HIV.AIDS + Population +
                    thinness..1.19.years + thinness.5.9.years +
                    Income.composition.of.resources + Schooling,
@@ -45,19 +47,24 @@ summary(step_model)
 ```
 
 # Best subset selection
-```{r}
-best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infant.deaths + Alcohol +
-                           percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
-                           Total.expenditure + Diphtheria + HIV.AIDS + Population +
-                           thinness..1.19.years + thinness.5.9.years +
-                           Income.composition.of.resources + Schooling,
-                         data = all_data, nvmax = 10)
+```{r, fig.width=10, fig.height=7}
+best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + 
+                           infant.deaths + Alcohol +
+                           percentage.expenditure + Hepatitis.B + Measles + 
+                           BMI + under.five.deaths + Polio +
+                           Total.expenditure + Diphtheria + HIV.AIDS + 
+                           Population + thinness..1.19.years + 
+                           thinness.5.9.years + Income.composition.of.resources 
+                          + Schooling, data = all_data, nvmax = 10)
 
 # Summary and plot
 best_summary <- summary(best_model)
 plot(best_model, scale = "adjr2")
 ```
-We decided on 
+
+We propose the following multiple linear regression model:
+$$GDP = E(GDP) + e =$$
+$$b_0 + b_1PercentageExpenditure + b_2Polio + b_3Population + b_4IncomeCompositionofResources + b_5Schooling + b_6Status$$
 
 # Get the response and predictors. 
 ```{r}
@@ -75,18 +82,18 @@ all_data$Status <- as.factor(all_data$Status)
 model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
 ```
+We estimate the deterministic model as $$\hat{GDP} = \hat{b_0} + \hat{b_1}PercentageExpenditure +\hat{b_2}Polio + $$
+$$\hat{b_3}Population +\hat{b_4}IncomeCompositionofResources +\hat{b_5}Schooling +\hat{b_6}Status $$ 
+by using the $lm$ function to find the values of the coefficients that minimize the RSS. 
 
 # Residual plots
-```{r, fig.width=12, fig.height=8,}
+```{r, fig.width=13, fig.height=8,}
 par(mfrow = c(2, 2))
 plot(model)
 ```
-# Check for regression assumptions. Residual VS each predictor
+
+# Residual VS each predictor (Regression assumptions)
 ```{r, fig.width=12, fig.height=8}
-
-# library(ggplot2)
-# library(patchwork)
-
 all_data$residuals <- resid(model)
 all_data$fitted <- fitted(model)
 
@@ -105,7 +112,8 @@ p3 <- ggplot(all_data, aes(x = Population, y = residuals)) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals vs Population")
 
-p4 <- ggplot(all_data, aes(x = `Income.composition.of.resources`, y = residuals)) +
+p4 <- ggplot(all_data, aes(x = `Income.composition.of.resources`, 
+                           y = residuals)) +
   geom_point(alpha = 0.6) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals vs Income Composition")
@@ -127,7 +135,7 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
 ```
 
 
-# Residual VS Fitted plot
+# Residual VS Fitted plot (Regression assumptions)
 ```{r}
 ggplot(all_data, aes(x = fitted, y = residuals)) +
   geom_point(alpha = 0.6, color = "steelblue") +
@@ -144,17 +152,20 @@ qq_plot <- ggplot(all_data, aes(sample = residuals)) +
   labs(title = "Q-Q Plot of Residuals")
 
 hist_plot <- ggplot(all_data, aes(x = residuals)) +
-  geom_histogram(binwidth = 500, fill = "steelblue", color = "white", alpha = 0.7) +
+  geom_histogram(binwidth = 500, fill = "steelblue", color = "white", 
+                 alpha = 0.7) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
   labs(title = "Histogram of Residuals", x = "Residuals", y = "Count")
 
 qq_plot | hist_plot
 ```
+
 # Check for influential points, high leverage points
 ```{r}
 # Set threshold
 predictors <- c("Status", "percentage.expenditure", "Polio",
-                "Total.expenditure", "Income.composition.of.resources", "Schooling")
+                "Total.expenditure", "Income.composition.of.resources", 
+                "Schooling")
 cook_thresh <- 4 / nrow(all_data)
 lev_thresh <- 2 * mean(all_data$leverage)
 
