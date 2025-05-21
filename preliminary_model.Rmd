@@ -31,7 +31,7 @@ The dataset used in this project is titled *Life Expectancy* (WHO), sourced from
 
 While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.  
 
-Multiple linear regression is an appropriate method for analysis, as the dataset consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
+Multiple linear regression is an appropriate method for analysis, as the data set consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
 
 GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
 
@@ -296,7 +296,7 @@ The adjusted R-squared of the transformed model was 0.9258, indicating that 92.6
 
 The residual plots assess linearity and constant variance assumptions. Residuals were mostly centered around zero, but a slight V-shape indicates some remaining heteroscedasticity, especially at the lower and higher ends of fitted GDP. This suggests more stable residuals in middle-income countries, while richer and poorer countries show more unpredictable patterns. For example, the U.S., Qatar, and Luxembourg all have high GDPs, but for very different reasons (tech, gas, or tax policy). Similarly, lower-income countries may have inconsistent or less reliable data.  
 
-The Q-Q plot showed that residuals were approximately normal, with minor deviation in the lower tail. Residuals versus individual predictors showed random scatter for income composition and schooling, but some structure for expenditure, population, and polio, suggesting potential nonlinearities.  
+The Q-Q plot showed that residuals were somewhat normal, but skewed left. Residuals versus individual predictors showed random scatter for income composition and schooling, but some structure for expenditure, population, and polio, suggesting potential nonlinearities.  
 
 Overall, the model shows strong evidence that educational and economic factors influence GDP, though future improvements could explore nonlinear modeling or methods to address residual heteroscedasticity.  
 \
