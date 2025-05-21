@@ -7,7 +7,8 @@ output: html_document
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps")
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps", "ggplot2", "patchwork")
+install.packages("patchwork")
 lapply(packages, require, character.only = T)
 set.seed(420)
 ```
@@ -59,6 +60,7 @@ best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infa
 best_summary <- summary(best_model)
 plot(best_model, scale = "adjr2")
 ```
+We decided on 
 
 # Get the response and predictors. 
 ```{r echo=FALSE}
@@ -78,16 +80,16 @@ summary(model)
 ```
 
 # Residual plots
-```{r message=FALSE, echo=FALSE, warning=FALSE}
+```{r, fig.width=12, fig.height=8,message=FALSE, echo=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(model)
 ```
 
 # Residual VS each predictor
-```{r,message=FALSE, echo=FALSE,warning=FALSE}
+```{r, fig.width=12, fig.height=8, message=FALSE, echo=FALSE,warning=FALSE}
 
-library(ggplot2)
-library(patchwork)
+# library(ggplot2)
+# library(patchwork)
 
 all_data$residuals <- resid(model)
 all_data$fitted <- fitted(model)
@@ -117,7 +119,7 @@ p5 <- ggplot(all_data, aes(x = Schooling, y = residuals)) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals vs Schooling")
 
-p6 <- ggplot(df, aes(x = as.factor(Status), y = residuals)) +
+p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
   geom_jitter(width = 0.2, alpha = 0.6, color = "steelblue") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
   scale_x_discrete(labels = c("Developing", "Developed")) +
