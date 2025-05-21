@@ -99,6 +99,87 @@ p5 <- scatter_plot("Schooling", "Schooling")
 # Combine in layout
 (p1 | p2 | p3) / (p4 | p5)
 ```
+GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.
+
+
+Fig. 2. - Histogram of GDP & numeric predictors
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create a common theme with smaller text and better use of space
+compact_theme <- theme(
+  plot.title = element_text(size = 9, face = "bold"),
+  axis.title = element_text(size = 8),
+  axis.text = element_text(size = 7),
+  plot.margin = margin(3, 3, 3, 3, "pt")
+)
+
+# Create the six histograms with the compact theme
+p1 <- ggplot(all_data, aes(x = GDP)) +
+  geom_histogram(binwidth = 1000, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of GDP", x = "GDP", y = "Frequency") +
+  scale_x_continuous(
+    limits = c(0, 50000),          # Set axis range from 0 to 50,000
+    breaks = seq(0, 50000, 10000), # Set tick marks at intervals of 10,000
+    labels = scales::comma          # Format numbers with commas
+  ) +
+  compact_theme
+
+p2 <- ggplot(all_data, aes(x = percentage.expenditure)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of % Expenditure", x = "% Expenditure", y = "Frequency") +
+  scale_x_continuous(
+    limits = c(0, 100),        # Reduced axis range from 0 to 100
+    breaks = seq(0, 100, 20),  # Set tick marks at intervals of 20
+    labels = scales::comma      # Format numbers with commas
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),        # Y-axis range from 0 to 100
+    breaks = seq(0, 100, 20)   # Y-axis tick marks at intervals of 20
+  ) +
+  compact_theme
+
+p3 <- ggplot(all_data, aes(x = Polio)) +
+  geom_histogram(binwidth = 2, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Polio", x = "Polio", y = "Frequency") +
+  compact_theme
+
+p4 <- ggplot(all_data, aes(x = Population)) +
+  geom_histogram(binwidth = 10000000, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Population", x = "Population (billions)", y = "Frequency") +
+  scale_x_continuous(
+    limits = c(0, 1.2e9),                   # X-axis range from 0 to 1.2 billion
+    breaks = seq(0, 1.2e9, 0.2e9),          # X-axis tick marks at intervals of 0.2 billion
+    labels = function(x) x/1e9              # Format as billions (0, 0.2, 0.4, etc.)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 500),                    # Y-axis range from 0 to 2500
+    breaks = seq(0, 500, 100)              # Y-axis tick marks at intervals of 500
+  ) +
+  compact_theme
+
+p5 <- ggplot(all_data, aes(x = Income.composition.of.resources)) +
+  geom_histogram(binwidth = 0.02, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Income Composition", x = "Income Composition", y = "Frequency") +
+  compact_theme
+
+p6 <- ggplot(all_data, aes(x = Schooling)) +
+  geom_histogram(binwidth = 0.5, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Schooling", x = "Schooling", y = "Frequency") +
+  compact_theme
+
+# Use patchwork to arrange plots with custom layout
+library(patchwork)
+combined_plot <- (p1 | p2 | p3) / (p4 | p5 | p6)
+
+# Apply global theme adjustments to the combined plot
+combined_plot & 
+  theme(plot.margin = margin(1, 1, 1, 1, "pt")) &
+  plot_layout(guides = "collect")
+```
+
+
+
+GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP.
 
 # Preliminary Results
 
@@ -270,3 +351,25 @@ std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
 
 (qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
 ```
+
+# Bibliography
+Kumar, R. (2018, February 10). *Life expectancy (WHO)* [Data set]. Kaggle.  
+&nbsp; [https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who)
+
+Organisation for Economic Co-operation and Development. (n.d.). *Nominal gross domestic product (GDP)*. OECD.  
+&nbsp; [https://www.oecd.org/en/data/indicators/nominal-gross-domestic-product-gdp.html?oecdcontrol-d7f68dbeee-var3=2023](https://www.oecd.org/en/data/indicators/nominal-gross-domestic-product-gdp.html?oecdcontrol-d7f68dbeee-var3=2023)
+
+Radcliffe, B. (n.d.). *How education and training affect the economy*. Investopedia.  
+&nbsp; [https://www.investopedia.com/articles/economics/09/education-training-advantages.asp](https://www.investopedia.com/articles/economics/09/education-training-advantages.asp)
+
+Raghupathi, V., & Raghupathi, W. (2020, May 13). Healthcare expenditure and economic performance: Insights from the United States data. *Frontiers in Public Health, 8*, 156.  
+&nbsp; [https://doi.org/10.3389/fpubh.2020.00156](https://doi.org/10.3389/fpubh.2020.00156)
+
+Solow, R. M. (1956). A contribution to the theory of economic growth. *The Quarterly Journal of Economics, 70*(1), 65–94.  
+&nbsp; [https://doi.org/10.2307/1884513](https://doi.org/10.2307/1884513)
+
+United Nations. (n.d.). *UN data*.  
+&nbsp;[https://data.un.org](https://data.un.org)
+
+World Health Organization. (n.d.). *Global Health Observatory (GHO) data repository*.  
+&nbsp;[https://www.who.int/data/gho](https://www.who.int/data/gho)
