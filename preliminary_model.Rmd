@@ -6,6 +6,8 @@ output:
   pdf_document:
     extra_dependencies: ["bbm"]
 urlcolor: blue
+bibliography: references.bib
+link-citations: true
 ---
 # Contributions
 **Introduction:** Sharon Lam
@@ -173,7 +175,7 @@ all_data$Status <- as.factor(all_data$Status)
 model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
 ```
-We estimate the deterministic model as 
+We estimate the deterministic model as: 
 $$
 \begin{aligned}
 \hat{GDP} = \exp(&\hat{b_0} + \hat{b_1} \cdot \text{PercentageExpenditure} + \hat{b_2} \cdot \text{Polio} + \hat{b_3} \cdot \text{Population} \\
@@ -268,17 +270,3 @@ std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
 
 (qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
 ```
-
-# Bibliography
-Kumar, Rajarshi. “Life Expectancy (WHO).” Kaggle, February 10, 2018. https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who.
-Organisation of Economic Co-operation and Development [OECD]. (n.d.). Nominal gross domestic product (GDP). OECD.
-
-
-https://www.oecd.org/en/data/indicators/nominal-gross-domestic-product-gdp.html?oecdcontrol-d7f68dbeee-var3=2023 
-United Nations. (n.d.). UN data. https://data.un.org
-
-
-World Health Organization. (n.d.). Global Health Observatory (GHO) data repository. https://www.who.int/data/gho
-
-
-Radcliffe, B. (n.d.). How education and training affect the economy. Investopedia. https://www.investopedia.com/articles/economics/09/education-training-advantages.asp
