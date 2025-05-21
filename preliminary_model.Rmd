@@ -73,7 +73,7 @@ all_data <- na.omit(all_data)
 response <- all_data$GDP
 x0 <- all_data$percentage.expenditure
 x1 <- all_data$Polio
-x2 <- all_data$Total.expenditure
+x2 <- all_data$Population
 x3 <- all_data$Income.composition.of.resources
 x4 <- all_data$Schooling
 
