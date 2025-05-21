@@ -7,6 +7,7 @@ output:
     extra_dependencies: ["bbm"]
 urlcolor: blue
 bibliography: references.bib
+nocite: '@*'
 link-citations: true
 ---
 # Contributions
@@ -32,6 +33,10 @@ While the dataset was initially intended to examine factors affecting life expec
 
 Multiple linear regression is an appropriate method for analysis, as the dataset consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
 
+GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
+
+GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP. 
+
 \
 Table 1: Variables used in the model
 
@@ -45,7 +50,6 @@ Table 1: Variables used in the model
 | Income composition of resources| Human Development Index in terms of income composition (index from 0 to 1)     |
 | Schooling                      | Number of years of schooling (years)                                           |
 
-
 Table 2: Continuous variables summary
 
 | Variable                         |   Mean   |   Std   |   Min   |   Q1   | Median |   Q3   |   Max    |
@@ -57,7 +61,6 @@ Table 2: Continuous variables summary
 | Income composition of resources  | 0.63     | 0.15    | 0.00    | 0.54   | 0.67   | 0.76   | 0.95     |
 | Schooling                        | 10.30    | 2.98    | 0.00    | 8.00   | 10.30  | 12.43  | 20.00    |
 
-
 Table 3: Status (categorical variable) frequency
 
 | Status     | Frequency |
@@ -67,7 +70,7 @@ Table 3: Status (categorical variable) frequency
 | **Total**  | 2938      |
 
 
-Figure 1: Scatter plots of GDP against numeric predictors
+Figure 1: Scatter plots of GDP against numeric predictors  
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
               "kableExtra", "leaps", "ggplot2", "patchwork")
@@ -99,12 +102,10 @@ p5 <- scatter_plot("Schooling", "Schooling")
 # Combine in layout
 (p1 | p2 | p3) / (p4 | p5)
 ```
-GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
 
 
-
-Figure 2: Histogram of GDP & numeric predictors
-
+Figure 2: Histogram of GDP & numeric predictors  
+\
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Create a common theme with smaller text and better use of space
 compact_theme <- theme(
@@ -180,16 +181,53 @@ combined_plot &
 
 
 
-GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP.  
+ 
+
+
 
 # Preliminary Results
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
 sum(is.na(all_data))
 colSums(is.na(all_data))
 ```
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+all_data <- read.csv("life_expectancy.csv")
+all_data <- na.omit(all_data)
 
+all_data$Status <- as.factor(all_data$Status)
+
+
+# Clean model
+full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
+                   infant.deaths + Alcohol + percentage.expenditure + 
+                   Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
+                   Total.expenditure + Diphtheria + HIV.AIDS + Population +
+                   thinness..1.19.years + thinness.5.9.years +
+                   Income.composition.of.resources + Schooling,
+                 data = all_data)
+summary(full_model)
+
+step_model <- step(full_model, direction = "both")
+summary(step_model)
+```
+
+
+```{r, fig.width=10, fig.height=7, eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + 
+                           infant.deaths + Alcohol +
+                           percentage.expenditure + Hepatitis.B + Measles + 
+                           BMI + under.five.deaths + Polio +
+                           Total.expenditure + Diphtheria + HIV.AIDS + 
+                           Population + thinness..1.19.years + 
+                           thinness.5.9.years + Income.composition.of.resources 
+                          + Schooling, data = all_data, nvmax = 10)
+
+# Summary and plot
+best_summary <- summary(best_model)
+plot(best_model, scale = "adjr2")
+```
 We propose the following multiple linear regression model:
 $$
 \begin{aligned}
@@ -199,8 +237,8 @@ GDP &= \mathbb{E}[\log(GDP)] + e \\
 \end{aligned}
 $$
 
-## Get the response and predictors. 
-```{r}
+Get the response and predictors: 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
 all_data$log_GDP <- log(all_data$GDP)
@@ -217,6 +255,8 @@ all_data$Status <- as.factor(all_data$Status)
 model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
 ```
+
+
 We estimate the deterministic model as: 
 $$
 \begin{aligned}
@@ -226,12 +266,29 @@ $$
 $$
 
 
-## Residual plots
-Figure 3: Different types of residual graphs
+
+
+
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+
+Figure 3: Linearity and homoscedasticity graphs  
+\
 ```{r, fig.width=13, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(model)
 ```
+
+
 
 Initially, the distribution of GDP was heavily right-skewed due to a small number of countries with disproportionately large economies. Residual plots also showed signs of heteroscedasticity, violating regression assumptions. To address this, we applied a log transformation to the response variable, which preserved the interpretability of a linear model while improving the spread of residuals.  
 
@@ -242,7 +299,10 @@ The residual plots assess linearity and constant variance assumptions. Residuals
 The Q-Q plot showed that residuals were approximately normal, with minor deviation in the lower tail. Residuals versus individual predictors showed random scatter for income composition and schooling, but some structure for expenditure, population, and polio, suggesting potential nonlinearities.  
 
 Overall, the model shows strong evidence that educational and economic factors influence GDP, though future improvements could explore nonlinear modeling or methods to address residual heteroscedasticity.  
-Figure 4: More graphs for regression assumptions
+\
+
+
+Figure 4: Normality graphs  
 ```{r, fig.width=12, fig.height=15, echo=FALSE, message=FALSE, warning=FALSE}
 # Store residuals only once (already done earlier)
 all_data$residuals <- resid(model)
@@ -281,10 +341,11 @@ std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
 (qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
 ```
 
-
-
-## Residual VS each predictor
-Figure 5: Behaviors between the residual and each predictor
+\
+\
+\
+Figure 5: Residual vs each predictor  
+\
 ```{r, fig.width=12, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
 all_data$residuals <- resid(model)
 all_data$fitted <- fitted(model)
@@ -325,28 +386,8 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
 
 (p1 | p2 | p3) / (p4 | p5 | p6)
 ```
+\
+\
+\
 
-
-
-
-# Bibliography
-Kumar, R. (2018, February 10). *Life expectancy (WHO)* [Data set]. Kaggle.  
-&nbsp; [https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who)
-
-Organisation for Economic Co-operation and Development. (n.d.). *Nominal gross domestic product (GDP)*. OECD.  
-&nbsp; [https://www.oecd.org/en/data/indicators/nominal-gross-domestic-product-gdp.html?oecdcontrol-d7f68dbeee-var3=2023](https://www.oecd.org/en/data/indicators/nominal-gross-domestic-product-gdp.html?oecdcontrol-d7f68dbeee-var3=2023)
-
-Radcliffe, B. (n.d.). *How education and training affect the economy*. Investopedia.  
-&nbsp; [https://www.investopedia.com/articles/economics/09/education-training-advantages.asp](https://www.investopedia.com/articles/economics/09/education-training-advantages.asp)
-
-Raghupathi, V., & Raghupathi, W. (2020, May 13). Healthcare expenditure and economic performance: Insights from the United States data. *Frontiers in Public Health, 8*, 156.  
-&nbsp; [https://doi.org/10.3389/fpubh.2020.00156](https://doi.org/10.3389/fpubh.2020.00156)
-
-Solow, R. M. (1956). A contribution to the theory of economic growth. *The Quarterly Journal of Economics, 70*(1), 65–94.  
-&nbsp; [https://doi.org/10.2307/1884513](https://doi.org/10.2307/1884513)
-
-United Nations. (n.d.). *UN data*.  
-&nbsp;[https://data.un.org](https://data.un.org)
-
-World Health Organization. (n.d.). *Global Health Observatory (GHO) data repository*.  
-&nbsp;[https://www.who.int/data/gho](https://www.who.int/data/gho)
+# References
