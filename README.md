@@ -2,7 +2,7 @@
 
 Dataset (csv):
 [life_expectancy.csv](life_expectancy.csv)
-[Original Link]([https://pages.github.com/](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who))
+[Original Link](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who)
 
 Code (R Markdown): 
 [preliminary_model.Rmd](preliminary_model.Rmd)
