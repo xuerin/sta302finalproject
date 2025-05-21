@@ -1,33 +1,30 @@
 ---
-title: "preliminary_model"
+title: "Can GDP be predicted by standard of living factors?"
 author: "Erin Xu & Dora Dong"
 date: "2025-05-19"
-output: html_document
+output: 
+  pdf_document:
+    extra_dependencies: ["bbm"]
+urlcolor: blue
 ---
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps", "ggplot2", "patchwork")
-install.packages("patchwork")
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
+              "kableExtra", "leaps", "ggplot2", "patchwork")
 lapply(packages, require, character.only = T)
 set.seed(420)
 ```
 
 # Load data and check if needed to clean. 
-```{r, echo=FALSE}
+```{r}
 all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
 sum(is.na(all_data))
 colSums(is.na(all_data))
 ```
 
-# Check for regression assumptions. 
-```{r, echo=FALSE}
-```
-
 # Decide predictors 
-```{r echo=FALSE}
-
+```{r eval=FALSE}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
 
@@ -35,8 +32,9 @@ all_data$Status <- as.factor(all_data$Status)
 
 
 # Clean model
-full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + infant.deaths + Alcohol +
-                   percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
+full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
+                   infant.deaths + Alcohol + percentage.expenditure + 
+                   Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
                    Total.expenditure + Diphtheria + HIV.AIDS + Population +
                    thinness..1.19.years + thinness.5.9.years +
                    Income.composition.of.resources + Schooling,
@@ -48,22 +46,26 @@ summary(step_model)
 ```
 
 # Best subset selection
-```{r echo=FALSE}
-best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infant.deaths + Alcohol +
-                           percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
-                           Total.expenditure + Diphtheria + HIV.AIDS + Population +
-                           thinness..1.19.years + thinness.5.9.years +
-                           Income.composition.of.resources + Schooling,
-                         data = all_data, nvmax = 10)
+```{r, fig.width=10, fig.height=7}
+best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + 
+                           infant.deaths + Alcohol +
+                           percentage.expenditure + Hepatitis.B + Measles + 
+                           BMI + under.five.deaths + Polio +
+                           Total.expenditure + Diphtheria + HIV.AIDS + 
+                           Population + thinness..1.19.years + 
+                           thinness.5.9.years + Income.composition.of.resources 
+                          + Schooling, data = all_data, nvmax = 10)
 
 # Summary and plot
 best_summary <- summary(best_model)
 plot(best_model, scale = "adjr2")
 ```
-We decided on 
+We propose the following multiple linear regression model:
+$$GDP = E(GDP) + e =$$
+$$b_0 + b_1PercentageExpenditure + b_2Polio + b_3Population + b_4IncomeCompositionofResources + b_5Schooling + b_6Status$$
 
 # Get the response and predictors. 
-```{r echo=FALSE}
+```{r}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
 all_data$log_GDP <- log(all_data$GDP)
@@ -80,19 +82,18 @@ all_data$Status <- as.factor(all_data$Status)
 model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
 ```
+We estimate the deterministic model as $$\hat{GDP} = \hat{b_0} + \hat{b_1}PercentageExpenditure +\hat{b_2}Polio + $$
+$$\hat{b_3}Population +\hat{b_4}IncomeCompositionofResources +\hat{b_5}Schooling +\hat{b_6}Status $$ 
+by using the $lm$ function to find the values of the coefficients that minimize the RSS. 
 
 # Residual plots
-```{r, fig.width=12, fig.height=8,message=FALSE, echo=FALSE, warning=FALSE}
+```{r, fig.width=13, fig.height=8,}
 par(mfrow = c(2, 2))
 plot(model)
 ```
 
-# Residual VS each predictor
-```{r, fig.width=12, fig.height=8, message=FALSE, echo=FALSE,warning=FALSE}
-
-# library(ggplot2)
-# library(patchwork)
-
+# Residual VS each predictor (Regression assumptions)
+```{r, fig.width=12, fig.height=8}
 all_data$residuals <- resid(model)
 all_data$fitted <- fitted(model)
 
@@ -111,7 +112,8 @@ p3 <- ggplot(all_data, aes(x = Population, y = residuals)) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals vs Population")
 
-p4 <- ggplot(all_data, aes(x = `Income.composition.of.resources`, y = residuals)) +
+p4 <- ggplot(all_data, aes(x = `Income.composition.of.resources`, 
+                           y = residuals)) +
   geom_point(alpha = 0.6) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals vs Income Composition")
@@ -132,15 +134,34 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
 (p1 | p2 | p3) / (p4 | p5 | p6)
 ```
 
+# Residual VS Fitted plot (Regression assumptions)
+```{r}
+qq_plot <- ggplot(all_data, aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line(color = "red", linetype = "dashed") +
+  labs(title = "Q-Q Plot of Residuals")
 
-# Residual VS Fitted plot
-```{r,message=FALSE, echo=FALSE,warning=FALSE}
-ggplot(all_data, aes(x = fitted, y = residuals)) +
-  geom_point(alpha = 0.6, color = "steelblue") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Residuals vs Fitted Values",
-       x = "Fitted Values",
-       y = "Residuals") +
-  theme_minimal()
+hist_plot <- ggplot(all_data, aes(x = residuals)) +
+  geom_histogram(binwidth = 500, fill = "steelblue", color = "white", 
+                 alpha = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Histogram of Residuals", x = "Residuals", y = "Count")
+
+qq_plot | hist_plot
 ```
 
+# Check for influential points, high leverage points
+```{r}
+# Set threshold
+predictors <- c("Status", "percentage.expenditure", "Polio",
+                "Total.expenditure", "Income.composition.of.resources", 
+                "Schooling")
+cook_thresh <- 4 / nrow(all_data)
+lev_thresh <- 2 * mean(all_data$leverage)
+
+# Logical vector for flagged rows
+flagged_index <- all_data$cooksD > cook_thresh | all_data$leverage > lev_thresh
+
+# Directly subset with logical index
+print(all_data[flagged_index, c("Country", predictors)])
+```
