@@ -30,7 +30,7 @@ urlcolor: blue
 
 &nbsp; Multiple linear regression is an appropriate method for analysis, as the dataset consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.
 
-
+\
 Table 1: Variables used in the model
 
 | **Variables**                   | **Description**                                                                 |
@@ -42,7 +42,7 @@ Table 1: Variables used in the model
 | Population                     | Population of the country                                                      |
 | Income composition of resources| Human Development Index in terms of income composition (index from 0 to 1)     |
 | Schooling                      | Number of years of schooling (years)                                           |
-\
+
 
 Table 2: Continuous variables summary
 
@@ -54,7 +54,7 @@ Table 2: Continuous variables summary
 | Population                       | 3.38e+07 | 1.19e+08| 366.00  | 3.35e+06|1.26e+07|3.88e+07|1.36e+09  |
 | Income composition of resources  | 0.63     | 0.15    | 0.00    | 0.54   | 0.67   | 0.76   | 0.95     |
 | Schooling                        | 10.30    | 2.98    | 0.00    | 8.00   | 10.30  | 12.43  | 20.00    |
-\
+
 
 Table 3: Status (categorical variable) frequency
 
@@ -63,21 +63,44 @@ Table 3: Status (categorical variable) frequency
 | Developing | 2426      |
 | Developed  | 512       |
 | **Total**  | 2938      |
-\
+
 
 Figure 1: Scatter plots of GDP against numeric predictors
-
-
-# Preliminary Results
-
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
               "kableExtra", "leaps", "ggplot2", "patchwork")
 lapply(packages, require, character.only = T)
 set.seed(420)
+all_data <- read.csv("life_expectancy.csv")
 ```
 
-# Load data and check if needed to clean
+```{r fig.width = 10, fig.length=12, echo=FALSE, message=FALSE, warning=FALSE}
+scatter_plot <- function(xvar, xlab) {
+  ggplot(all_data, aes_string(x = xvar, y = "GDP")) +
+    geom_point(color = "black", alpha = 0.6) +
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +
+    labs(
+      title = paste("GDP vs", xlab),
+      x = xlab,
+      y = "GDP"
+    ) +
+    theme_minimal()
+}
+
+# Create plots
+p1 <- scatter_plot("percentage.expenditure", "Percentage expenditure")
+p2 <- scatter_plot("Polio", "Polio")
+p3 <- scatter_plot("Population", "Population")
+p4 <- scatter_plot("Income.composition.of.resources", "Income composition of resources")
+p5 <- scatter_plot("Schooling", "Schooling")
+
+# Combine in layout
+(p1 | p2 | p3) / (p4 | p5)
+```
+
+# Preliminary Results
+
+## Load data and check if needed to clean
 ```{r}
 all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
@@ -85,7 +108,7 @@ sum(is.na(all_data))
 colSums(is.na(all_data))
 ```
 
-# Decide predictors 
+## Decide predictors 
 ```{r eval=FALSE}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
@@ -107,7 +130,7 @@ step_model <- step(full_model, direction = "both")
 summary(step_model)
 ```
 
-# Best subset selection
+## Best subset selection
 ```{r, fig.width=10, fig.height=7}
 best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + 
                            infant.deaths + Alcohol +
@@ -126,7 +149,7 @@ We propose the following multiple linear regression model:
 $$GDP = E(log(GDP) + e =$$
 $$b_0 + b_1PercentageExpenditure + b_2Polio + b_3Population + b_4IncomeCompositionofResources + b_5Schooling + b_6Status$$
 
-# Get the response and predictors. 
+## Get the response and predictors. 
 ```{r}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
@@ -148,13 +171,13 @@ We estimate the deterministic model as $$\hat{GDP} = exp(\hat{b_0} + \hat{b_1}Pe
 $$\hat{b_3}Population +\hat{b_4}IncomeCompositionofResources +\hat{b_5}Schooling +\hat{b_6}Status) $$ 
 by using the $lm$ function to find the values of the coefficients that minimize the RSS. 
 
-# Residual plots
+## Residual plots
 ```{r, fig.width=13, fig.height=8,}
 par(mfrow = c(2, 2))
 plot(model)
 ```
 
-# Residual VS each predictor (Regression assumptions)
+## Residual VS each predictor (Regression assumptions)
 ```{r, fig.width=12, fig.height=8}
 all_data$residuals <- resid(model)
 all_data$fitted <- fitted(model)
@@ -196,7 +219,7 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
 (p1 | p2 | p3) / (p4 | p5 | p6)
 ```
 
-# Residual VS Fitted plot (Regression assumptions)
+## Residual VS Fitted plot (Regression assumptions)
 ```{r, fig.width=12, fig.height=15}
 # Store residuals only once (already done earlier)
 all_data$residuals <- resid(model)
