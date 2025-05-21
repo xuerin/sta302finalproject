@@ -19,18 +19,18 @@ link-citations: true
 **Bibliography:** Everyone 
 
 # Introduction
-&nbsp; Gross domestic product (GDP) is a widely used measure of a country’s economic output, representing the total market value of goods and services produced within its borders over a specified period. It serves as a key indicator of national economic performance and enables comparison across countries and time periods. By standard economic theory, GDP is influenced by components such as consumer spending, government expenditures, investment in capital goods, and net exports. In addition, factors like human capital, infrastructure, technological innovation, and political stability are considered critical for long-term economic growth (Solow, 1956).
+Gross domestic product (GDP) is a widely used measure of a country’s economic output, representing the total market value of goods and services produced within its borders over a specified period. It serves as a key indicator of national economic performance and enables comparison across countries and time periods. By standard economic theory, GDP is influenced by components such as consumer spending, government expenditures, investment in capital goods, and net exports. In addition, factors like human capital, infrastructure, technological innovation, and political stability are considered critical for long-term economic growth (Solow, 1956).  
 
-&nbsp; This project applies multiple linear regression (MLR) to investigate the extent to which health-related and socioeconomic factors are associated with GDP, with the research question being: *To what extent do government spending on health and socioeconomic resources affect a country’s GDP?* Specifically, country status (developed vs. developing), percentage expenditure on health, polio immunization coverage, income composition of resources, years of schooling, and population are used as predictors. These variables, comprising both continuous and categorical data, are examined for their ability to explain cross-country variation in GDP. Health spending, represented by expenditure and immunization coverage, has been shown to enhance productivity, while income composition and national development status reflect broader socioeconomic conditions. Education and population are also recognized as structural drivers of economic capacity.
+This project applies multiple linear regression (MLR) to investigate the extent to which health-related and socioeconomic factors are associated with GDP, with the research question being: *To what extent do government spending on health and socioeconomic resources affect a country’s GDP?* Specifically, country status (developed vs. developing), percentage expenditure on health, polio immunization coverage, income composition of resources, years of schooling, and population are used as predictors. These variables, comprising both continuous and categorical data, are examined for their ability to explain cross-country variation in GDP. Health spending, represented by expenditure and immunization coverage, has been shown to enhance productivity, while income composition and national development status reflect broader socioeconomic conditions. Education and population are also recognized as structural drivers of economic capacity.  
 
-&nbsp; Estimating a linear model facilitates the quantification of each predictor’s contribution to GDP while accounting for the influence of other variables. As economic theory suggests a positive relationship between GDP and improved development indicators, the application of MLR is appropriate for this context. The focus of the analysis is on interpretability, aiming to understand how each factor relates to economic output and to support evidence-based approaches to development and policy planning.
+Estimating a linear model facilitates the quantification of each predictor’s contribution to GDP while accounting for the influence of other variables. As economic theory suggests a positive relationship between GDP and improved development indicators, the application of MLR is appropriate for this context. The focus of the analysis is on interpretability, aiming to understand how each factor relates to economic output and to support evidence-based approaches to development and policy planning.  
 
 # Data Description
-&nbsp; The dataset used in this project is titled *Life Expectancy* (WHO), sourced from *Kaggle* (Kumar, 2018). Its primary usage is for health data analysis. Data collectors combined publicly available data from the *World Health Organization* (WHO) and the *United Nations* (UN), which were gathered through national health departments, structured questionnaires, and annual statistical submissions by participating countries (World Health Organization, n.d.; United Nations, n.d.).
+The dataset used in this project is titled *Life Expectancy* (WHO), sourced from *Kaggle* (Kumar, 2018). Its primary usage is for health data analysis. Data collectors combined publicly available data from the *World Health Organization* (WHO) and the *United Nations* (UN), which were gathered through national health departments, structured questionnaires, and annual statistical submissions by participating countries (World Health Organization, n.d.; United Nations, n.d.).  
 
-&nbsp; While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.
+While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.  
 
-&nbsp; Multiple linear regression is an appropriate method for analysis, as the dataset consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.
+Multiple linear regression is an appropriate method for analysis, as the dataset consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
 
 \
 Table 1: Variables used in the model
@@ -99,10 +99,11 @@ p5 <- scatter_plot("Schooling", "Schooling")
 # Combine in layout
 (p1 | p2 | p3) / (p4 | p5)
 ```
-GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.
+GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
 
 
-Fig. 2. - Histogram of GDP & numeric predictors
+
+Figure 2: Histogram of GDP & numeric predictors
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Create a common theme with smaller text and better use of space
@@ -179,11 +180,11 @@ combined_plot &
 
 
 
-GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP.
+GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP.  
 
 # Preliminary Results
 
-The dataset was first loaded and examined for missing values. Observations containing any missing data were removed using listwise deletion to ensure model integrity. All relevant variables were transformed as necessary, and the categorical variable Status was converted into a factor for use in regression modeling.
+The dataset was first loaded and examined for missing values. Observations containing any missing data were removed using listwise deletion to ensure model integrity. All relevant variables were transformed as necessary, and the categorical variable Status was converted into a factor for use in regression modeling.  
 ```{r}
 all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
@@ -191,44 +192,6 @@ sum(is.na(all_data))
 colSums(is.na(all_data))
 ```
 
-## Decide predictors 
-```{r eval=FALSE}
-all_data <- read.csv("life_expectancy.csv")
-all_data <- na.omit(all_data)
-
-all_data$Status <- as.factor(all_data$Status)
-
-
-# Clean model
-full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
-                   infant.deaths + Alcohol + percentage.expenditure + 
-                   Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
-                   Total.expenditure + Diphtheria + HIV.AIDS + Population +
-                   thinness..1.19.years + thinness.5.9.years +
-                   Income.composition.of.resources + Schooling,
-                 data = all_data)
-summary(full_model)
-
-step_model <- step(full_model, direction = "both")
-summary(step_model)
-```
-
-## Best subset selection
-```{r, fig.width=10, fig.height=7}
-best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + 
-                           infant.deaths + Alcohol +
-                           percentage.expenditure + Hepatitis.B + Measles + 
-                           BMI + under.five.deaths + Polio +
-                           Total.expenditure + Diphtheria + HIV.AIDS + 
-                           Population + thinness..1.19.years + 
-                           thinness.5.9.years + Income.composition.of.resources 
-                          + Schooling, data = all_data, nvmax = 10)
-
-# Summary and plot
-best_summary <- summary(best_model)
-plot(best_model, scale = "adjr2")
-```
-\
 We propose the following multiple linear regression model:
 $$
 \begin{aligned}
@@ -263,15 +226,70 @@ $$
                 &+ \hat{b_4} \cdot \text{IncomeCompositionOfResources} + \hat{b_5} \cdot \text{Schooling} + \hat{b_6} \cdot \text{Status})
 \end{aligned}
 $$
-by using the $lm$ function to find the values of the coefficients that minimize the RSS. 
+by using the $lm$ function to find the values of the coefficients that minimize the RSS.
+  
+
+We fitted a multiple linear regression model to examine how healthcare investment, education, and economic factors relate to a country’s gross domestic product (GDP). Initially, the distribution of GDP was heavily right-skewed due to a small number of countries with disproportionately large economies. Residual plots also showed signs of heteroscedasticity, violating regression assumptions. To address these issues, we applied a logarithmic transformation to the response variable. This preserves the interpretability of a linear model while stabilizing variance and reducing skewness.  
+
+The model shows a high adjusted R-squared value of 0.9258, indicating that approximately 92.6% of the variability in GDP across countries is explained by the predictors in the model. Specifically, for numerical predictors, percentage expenditure and schooling emerged as strong and statistically significant predictors of GDP, with both p-values less than 0.001. This suggests that a country’s health expenditure and education level are significantly and positively associated with GDP growth. A country’s economy becomes more productive as the proportion of educated workers increases, since educated workers can more efficiently carry out tasks that require literacy and critical thinking (Radcliffe, n.d.). Also, the increased expenditure in healthcare increases the productivity of human capital, thus making a positive contribution to economic growth (Raghupathi, n.d.).  
+
+For the categorical predictor, Status (Developed vs. Developing), the p-value was approximately 0.0038, confirming that, after controlling for other variables, developed countries tend to have significantly higher GDPs than developing ones. In contrast, Polio immunization coverage and Population size were not statistically significant, implying weaker associations with GDP in this model.  
+
 
 ## Residual plots
+Figure 3: Different types of residual graphs
 ```{r, fig.width=13, fig.height=8,}
 par(mfrow = c(2, 2))
 plot(model)
 ```
+## Residual VS Fitted plot
+Figure 4: More graphs for regression assumptions
+```{r, fig.width=12, fig.height=15}
+# Store residuals only once (already done earlier)
+all_data$residuals <- resid(model)
+all_data$std_residuals <- rstandard(model)
 
-## Residual VS each predictor (Regression assumptions)
+# Q-Q Plot
+qq_plot <- ggplot(all_data, aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line(color = "red", linetype = "dashed") +
+  labs(title = "Q-Q Plot of Residuals") +
+  theme_minimal() +  # Optional: adds a cleaner theme that may help with rendering
+  theme(aspect.ratio = 1)  # Makes the plot square, which often helps QQ plots display correctly
+
+# Standardized Q-Q Plot 
+std_qq_plot <- ggplot(all_data, aes(sample = std_residuals)) +
+  stat_qq() +
+  stat_qq_line(color = "red", linetype = "dashed") +
+  labs(title = "Q-Q Plot of Standardized Residuals") +
+  theme_minimal() +
+  theme(aspect.ratio = 1)
+
+# Histogram
+hist_plot <- ggplot(all_data, aes(x = residuals)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Histogram of Residuals", x = "Residuals", y = "Count")
+
+std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Histogram of Standardized Residuals", 
+       x = "Standardized Residuals", 
+       y = "Count")
+
+
+(qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
+```
+
+
+These plots assess the linearity and homoscedasticity assumptions. The residuals are mostly centered around zero, but a slight "V"-shape indicates non-constant variance (heteroscedasticity). This suggests that residual spread increases slightly at both ends of the fitted values, though the log-transformation helped reduce the initial funneling pattern.  
+In context with our research, this suggests that residuals are smaller and more stable in the middle range of GDP. There is more spread (variance) at both low GDP levels (many developing countries) and high GDP levels (few very wealthy countries). High GDP countries are diverse. For example, the U.S., Qatar, and Monaco all have high GDPs, but for different reasons: Tech and services, oil, and a tax haven. Our model doesn’t capture these differences due to dataset constraints, so it makes sense that the residuals are less stable at the extremes. Similarly, low GDP countries may have underreported or volatile data. For example, they would face issues with accuracy in GDP measurement, health reporting or spending efficiency, and still face structural limitations like geopolitical conflict and corruption. This would increase error (residuals) at the low end.  In a nice meeting point, the middle GDP countries may conform more closely to the general economic patterns our model captures, as we would expect so, enforcing the pattern in the graph that the residuals tend to be smaller and more consistent there.  
+
+In Figure 4, the QQ-plot shows normality with most points aligned along the standard line, but some deviation in the lower tail indicates possible very low residual outliers, which aligns with the analysis in the previous figures as well.  
+
+## Residual VS each predictor
+Figure 5: Behaviors between the residual and each predictor
 ```{r, fig.width=12, fig.height=8}
 all_data$residuals <- resid(model)
 all_data$fitted <- fitted(model)
@@ -313,44 +331,12 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
 (p1 | p2 | p3) / (p4 | p5 | p6)
 ```
 
-## Residual VS Fitted plot (Regression assumptions)
-```{r, fig.width=12, fig.height=15}
-# Store residuals only once (already done earlier)
-all_data$residuals <- resid(model)
-all_data$std_residuals <- rstandard(model)
 
-# Q-Q Plot
-qq_plot <- ggplot(all_data, aes(sample = residuals)) +
-  stat_qq() +
-  stat_qq_line(color = "red", linetype = "dashed") +
-  labs(title = "Q-Q Plot of Residuals") +
-  theme_minimal() +  # Optional: adds a cleaner theme that may help with rendering
-  theme(aspect.ratio = 1)  # Makes the plot square, which often helps QQ plots display correctly
+In Figure 5, the plots show different behaviors between the residual and each predictor. For percentage expenditure, polio, and population, the residual plot shows a non-random pattern, indicating the presence of nonlinearities or influential points. In contrast, the residuals of income composition and schooling look more random with constant error variance, and have a stronger linear relationship with GDP.  
 
-# Standardized Q-Q Plot 
-std_qq_plot <- ggplot(all_data, aes(sample = std_residuals)) +
-  stat_qq() +
-  stat_qq_line(color = "red", linetype = "dashed") +
-  labs(title = "Q-Q Plot of Standardized Residuals") +
-  theme_minimal() +
-  theme(aspect.ratio = 1)
-
-# Histogram
-hist_plot <- ggplot(all_data, aes(x = residuals)) +
-  geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Histogram of Residuals", x = "Residuals", y = "Count")
-
-std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
-  geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Histogram of Standardized Residuals", 
-       x = "Standardized Residuals", 
-       y = "Count")
+In summary, the model provides strong preliminary evidence that economic and educational factors are key drivers of GDP; future improvements could involve transformations or other methods to address assumption violations and improve model reliability. While assumptions are reasonably satisfied, in the future, we would like to explore interaction effects or non-linear terms more closely and to implement a more robust strategy to address heteroscedasticity.  
 
 
-(qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
-```
 
 # Bibliography
 Kumar, R. (2018, February 10). *Life expectancy (WHO)* [Data set]. Kaggle.  
