@@ -2,13 +2,14 @@
 title: "preliminary_model"
 author: "Erin Xu & Dora Dong"
 date: "2025-05-19"
-output: html_document
+output: 
+  pdf_document:
+    extra_dependencies: ["bbm"]
+urlcolor: blue
 ---
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps", "ggplot2", "patchwork")
-install.packages("patchwork")
 lapply(packages, require, character.only = T)
 set.seed(420)
 ```
@@ -22,7 +23,7 @@ colSums(is.na(all_data))
 ```
 
 # Decide predictors 
-```{r echo=FALSE}
+```{r include=FALSE, echo=FALSE}
 
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
@@ -44,7 +45,7 @@ summary(step_model)
 ```
 
 # Best subset selection
-```{r echo=FALSE}
+```{r}
 best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infant.deaths + Alcohol +
                            percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
                            Total.expenditure + Diphtheria + HIV.AIDS + Population +
@@ -59,7 +60,7 @@ plot(best_model, scale = "adjr2")
 We decided on 
 
 # Get the response and predictors. 
-```{r echo=FALSE}
+```{r}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
 response <- all_data$GDP
@@ -76,12 +77,12 @@ summary(model)
 ```
 
 # Residual plots
-```{r, fig.width=12, fig.height=8,message=FALSE, echo=FALSE, warning=FALSE}
+```{r, fig.width=12, fig.height=8,}
 par(mfrow = c(2, 2))
 plot(model)
 ```
 # Check for regression assumptions. Residual VS each predictor
-```{r, fig.width=12, fig.height=8, message=FALSE, echo=FALSE,warning=FALSE}
+```{r, fig.width=12, fig.height=8}
 
 # library(ggplot2)
 # library(patchwork)
@@ -127,7 +128,7 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
 
 
 # Residual VS Fitted plot
-```{r,message=FALSE, echo=FALSE,warning=FALSE}
+```{r}
 ggplot(all_data, aes(x = fitted, y = residuals)) +
   geom_point(alpha = 0.6, color = "steelblue") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
@@ -136,7 +137,7 @@ ggplot(all_data, aes(x = fitted, y = residuals)) +
        y = "Residuals") +
   theme_minimal()
 ```
-```{r echo=FALSE}
+```{r}
 qq_plot <- ggplot(all_data, aes(sample = residuals)) +
   stat_qq() +
   stat_qq_line(color = "red", linetype = "dashed") +
@@ -148,4 +149,19 @@ hist_plot <- ggplot(all_data, aes(x = residuals)) +
   labs(title = "Histogram of Residuals", x = "Residuals", y = "Count")
 
 qq_plot | hist_plot
+```
+# Check for influential points, high leverage points
+```{r}
+# Set threshold
+predictors <- c("Status", "percentage.expenditure", "Polio",
+                "Total.expenditure", "Income.composition.of.resources", "Schooling")
+cook_thresh <- 4 / nrow(all_data)
+lev_thresh <- 2 * mean(all_data$leverage)
+
+# Logical vector for flagged rows
+flagged_index <- all_data$cooksD > cook_thresh | all_data$leverage > lev_thresh
+
+# Directly subset with logical index
+print(all_data[flagged_index, c("Country", predictors)])
+
 ```
