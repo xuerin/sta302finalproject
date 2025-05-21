@@ -25,7 +25,6 @@ colSums(is.na(all_data))
 
 # Decide predictors 
 ```{r eval=FALSE}
-
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
 
@@ -61,7 +60,6 @@ best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality +
 best_summary <- summary(best_model)
 plot(best_model, scale = "adjr2")
 ```
-
 We propose the following multiple linear regression model:
 $$GDP = E(GDP) + e =$$
 $$b_0 + b_1PercentageExpenditure + b_2Polio + b_3Population + b_4IncomeCompositionofResources + b_5Schooling + b_6Status$$
@@ -70,7 +68,9 @@ $$b_0 + b_1PercentageExpenditure + b_2Polio + b_3Population + b_4IncomeCompositi
 ```{r}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
-response <- all_data$GDP
+all_data$log_GDP <- log(all_data$GDP)
+
+response <- all_data$log_GDP
 x0 <- all_data$percentage.expenditure
 x1 <- all_data$Polio
 x2 <- all_data$Population
@@ -134,17 +134,7 @@ p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
 (p1 | p2 | p3) / (p4 | p5 | p6)
 ```
 
-
 # Residual VS Fitted plot (Regression assumptions)
-```{r}
-ggplot(all_data, aes(x = fitted, y = residuals)) +
-  geom_point(alpha = 0.6, color = "steelblue") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Residuals vs Fitted Values",
-       x = "Fitted Values",
-       y = "Residuals") +
-  theme_minimal()
-```
 ```{r}
 qq_plot <- ggplot(all_data, aes(sample = residuals)) +
   stat_qq() +
@@ -174,5 +164,4 @@ flagged_index <- all_data$cooksD > cook_thresh | all_data$leverage > lev_thresh
 
 # Directly subset with logical index
 print(all_data[flagged_index, c("Country", predictors)])
-
 ```
