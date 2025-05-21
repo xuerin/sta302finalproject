@@ -118,8 +118,8 @@ p5 <- ggplot(all_data, aes(x = Schooling, y = residuals)) +
   geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
   labs(title = "Residuals vs Schooling")
 
-p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
-  geom_boxplot(fill = "lightgray") +
+p6 <- ggplot(df, aes(x = as.factor(Status), y = residuals)) +
+  geom_jitter(width = 0.2, alpha = 0.6, color = "steelblue") +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
   scale_x_discrete(labels = c("Developing", "Developed")) +
   labs(title = "Residuals vs Status",
