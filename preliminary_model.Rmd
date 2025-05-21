@@ -83,10 +83,54 @@ par(mfrow = c(2, 2))
 plot(model)
 ```
 
+# Residual VS each predictor
+
+```{r,message=FALSE, echo=FALSE,warning=FALSE}
+
+library(ggplot2)
 
 
+all_data$residuals <- resid(model)
+all_data$fitted <- fitted(model)
 
+p1 <- ggplot(all_data, aes(x = `percentage.expenditure`, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Percentage Expenditure")
 
+p2 <- ggplot(all_data, aes(x = Polio, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Polio")
 
+p3 <- ggplot(all_data, aes(x = Population, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Population")
 
+p4 <- ggplot(all_data, aes(x = `Income.composition.of.resources`, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Income Composition")
+
+p5 <- ggplot(all_data, aes(x = Schooling, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Schooling")
+
+p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
+  geom_boxplot(fill = "lightgray") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  scale_x_discrete(labels = c("Developing", "Developed")) +
+  labs(title = "Residuals vs Status",
+       x = "Status",
+       y = "Residuals")
+
+p1
+p2
+p3
+p4
+p5
+p6
+```
 
