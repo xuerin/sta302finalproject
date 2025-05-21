@@ -100,7 +100,7 @@ p5 <- scatter_plot("Schooling", "Schooling")
 
 # Preliminary Results
 
-## Load data and check if needed to clean
+The dataset was first loaded and examined for missing values. Observations containing any missing data were removed using listwise deletion to ensure model integrity. All relevant variables were transformed as necessary, and the categorical variable Status was converted into a factor for use in regression modeling.
 ```{r}
 all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
@@ -145,9 +145,15 @@ best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality +
 best_summary <- summary(best_model)
 plot(best_model, scale = "adjr2")
 ```
+\
 We propose the following multiple linear regression model:
-$$GDP = E(log(GDP) + e =$$
-$$b_0 + b_1PercentageExpenditure + b_2Polio + b_3Population + b_4IncomeCompositionofResources + b_5Schooling + b_6Status$$
+$$
+\begin{aligned}
+GDP &= \mathbb{E}[\log(GDP)] + e \\
+    &= b_0 + b_1 \cdot \text{PercentageExpenditure} + b_2 \cdot \text{Polio} + b_3 \cdot \text{Population} \\
+    &\quad + b_4 \cdot \text{IncomeCompositionOfResources} + b_5 \cdot \text{Schooling} + b_6 \cdot \text{Status}
+\end{aligned}
+$$
 
 ## Get the response and predictors. 
 ```{r}
@@ -167,8 +173,13 @@ all_data$Status <- as.factor(all_data$Status)
 model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
 ```
-We estimate the deterministic model as $$\hat{GDP} = exp(\hat{b_0} + \hat{b_1}PercentageExpenditure +\hat{b_2}Polio + $$
-$$\hat{b_3}Population +\hat{b_4}IncomeCompositionofResources +\hat{b_5}Schooling +\hat{b_6}Status) $$ 
+We estimate the deterministic model as 
+$$
+\begin{aligned}
+\hat{GDP} = \exp(&\hat{b_0} + \hat{b_1} \cdot \text{PercentageExpenditure} + \hat{b_2} \cdot \text{Polio} + \hat{b_3} \cdot \text{Population} \\
+                &+ \hat{b_4} \cdot \text{IncomeCompositionOfResources} + \hat{b_5} \cdot \text{Schooling} + \hat{b_6} \cdot \text{Status})
+\end{aligned}
+$$
 by using the $lm$ function to find the values of the coefficients that minimize the RSS. 
 
 ## Residual plots
@@ -257,4 +268,17 @@ std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
 
 (qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
 ```
+
 # Bibliography
+Kumar, Rajarshi. “Life Expectancy (WHO).” Kaggle, February 10, 2018. https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who.
+Organisation of Economic Co-operation and Development [OECD]. (n.d.). Nominal gross domestic product (GDP). OECD.
+
+
+https://www.oecd.org/en/data/indicators/nominal-gross-domestic-product-gdp.html?oecdcontrol-d7f68dbeee-var3=2023 
+United Nations. (n.d.). UN data. https://data.un.org
+
+
+World Health Organization. (n.d.). Global Health Observatory (GHO) data repository. https://www.who.int/data/gho
+
+
+Radcliffe, B. (n.d.). How education and training affect the economy. Investopedia. https://www.investopedia.com/articles/economics/09/education-training-advantages.asp
