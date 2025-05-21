@@ -7,7 +7,8 @@ output: html_document
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps")
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra", "leaps", "ggplot2", "patchwork")
+install.packages("patchwork")
 lapply(packages, require, character.only = T)
 set.seed(420)
 ```
@@ -18,16 +19,6 @@ all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
 anyNA(all_data)
 sum(is.na(all_data))
 colSums(is.na(all_data))
-```
-
-# Check for regression assumptions. 
-```{r, echo=FALSE}
-```
-# clean data
-
-```{r echo=FALSE}
-all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
-all_data <- na.omit(all_data) 
 ```
 
 # Decide predictors 
@@ -50,8 +41,10 @@ summary(full_model)
 
 step_model <- step(full_model, direction = "both")
 summary(step_model)
+```
 
 # Best subset selection
+```{r echo=FALSE}
 best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infant.deaths + Alcohol +
                            percentage.expenditure + Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
                            Total.expenditure + Diphtheria + HIV.AIDS + Population +
@@ -62,9 +55,8 @@ best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + infa
 # Summary and plot
 best_summary <- summary(best_model)
 plot(best_model, scale = "adjr2")
-
-
 ```
+We decided on 
 
 # Get the response and predictors. 
 ```{r echo=FALSE}
@@ -73,7 +65,7 @@ all_data <- na.omit(all_data)
 response <- all_data$GDP
 x0 <- all_data$percentage.expenditure
 x1 <- all_data$Polio
-x2 <- all_data$Total.expenditure
+x2 <- all_data$Population
 x3 <- all_data$Income.composition.of.resources
 x4 <- all_data$Schooling
 
@@ -81,90 +73,79 @@ all_data$Status <- as.factor(all_data$Status)
 
 model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
 summary(model)
-par(mfrow = c(2, 2))
-plot(model)
-
 ```
 
 # Residual plots
-```{r message=FALSE, echo=FALSE, warning=FALSE}
+```{r, fig.width=12, fig.height=8,message=FALSE, echo=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(model)
 ```
+# Check for regression assumptions. Residual VS each predictor
+```{r, fig.width=12, fig.height=8, message=FALSE, echo=FALSE,warning=FALSE}
 
+# library(ggplot2)
+# library(patchwork)
 
+all_data$residuals <- resid(model)
+all_data$fitted <- fitted(model)
 
+p1 <- ggplot(all_data, aes(x = `percentage.expenditure`, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Percentage Expenditure")
 
-################# Life_Expectancy_Data #############################
-####################################################################
-####################################################################
+p2 <- ggplot(all_data, aes(x = Polio, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Polio")
 
+p3 <- ggplot(all_data, aes(x = Population, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Population")
 
----
-title: "preliminary_model"
-author: "Erin Xu & Dora Dong"
-date: "2025-05-19"
-output: html_document
----
-  
-```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", "kableExtra")
-lapply(packages, require, character.only = TRUE)
-set.seed(420)
+p4 <- ggplot(all_data, aes(x = `Income.composition.of.resources`, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Income Composition")
+
+p5 <- ggplot(all_data, aes(x = Schooling, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Schooling")
+
+p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
+  geom_jitter(width = 0.2, alpha = 0.6, color = "steelblue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  scale_x_discrete(labels = c("Developing", "Developed")) +
+  labs(title = "Residuals vs Status",
+       x = "Status",
+       y = "Residuals")
+
+(p1 | p2 | p3) / (p4 | p5 | p6)
 ```
 
-# Load data and check if needed to clean. 
-```{r, echo=FALSE}
-all_data <- read.csv("Life_Expectancy_Data.csv", na.strings = c("", "NA"))
-anyNA(all_data)
-sum(is.na(all_data))
-colSums(is.na(all_data))
 
-# clean data
-``` {r echo=FALSE}
-all_data <- read.csv("Life_Expectancy_Data.csv", na.strings = c("", "NA"))
-all_data <- na.omit(all_data) 
-```
-
-## Get the response and predictors. 
-
-```{r echo=FALSE}
-response <- all_data$Life.expectancy
-x0 <- all_data$Adult.Mortality
-x1 <- all_data$Schooling
-x2 <- all_data$Income.composition.of.resources
-x3 <- all_data$percentage.expenditure
-x4 <- all_data$Diphtheria
-x5 <- all_data$Polio
-x6 <- all_data$Alcohol
-x7 <- all_data$BMI
-
-all_data$Status <- as.factor(all_data$Status)
-
-model <- lm(response ~ x0 + x1 + x2 + x3 + x4 + x5 + x6 + x7 + Status, data=all_data)
-summary(model)
-```
-
-# Residual plots
+# Residual VS Fitted plot
 ```{r,message=FALSE, echo=FALSE,warning=FALSE}
-par(mfrow = c(2, 2))
-plot(model)
+ggplot(all_data, aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.6, color = "steelblue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs Fitted Values",
+       x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
 ```
+```{r echo=FALSE}
+qq_plot <- ggplot(all_data, aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line(color = "red", linetype = "dashed") +
+  labs(title = "Q-Q Plot of Residuals")
 
+hist_plot <- ggplot(all_data, aes(x = residuals)) +
+  geom_histogram(binwidth = 500, fill = "steelblue", color = "white", alpha = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Histogram of Residuals", x = "Residuals", y = "Count")
 
-
-#hsfjhdkffjksdfjhhjskdf
-
-
-
-
-
-
-
-
-
-
-
-
-
+qq_plot | hist_plot
+```
