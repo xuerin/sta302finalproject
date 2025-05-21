@@ -298,7 +298,7 @@ The residual plots assess linearity and constant variance assumptions. Residuals
 
 The Q-Q plot showed that residuals were somewhat normal, but skewed left. Residuals versus individual predictors showed random scatter for income composition and schooling, but some structure for expenditure, population, and polio, suggesting potential nonlinearities.  
 
-Overall, the model shows strong evidence that educational and economic factors influence GDP, though future improvements could explore nonlinear modeling or methods to address residual heteroscedasticity.  
+Overall, the model shows strong evidence that educational and economic factors influence GDP, though future improvements could explore nonlinear modeling or transformation methods to address residual heteroscedasticity.  
 \
 
 
