@@ -1,8 +1,8 @@
 # Modeling GDP Using Health and Socioeconomic Indicators
+## Erin Xu, Dora Dong, Shencen Cai, Sharon Lam
 
 Dataset (csv):
-[life_expectancy.csv](life_expectancy.csv)
-[Original Link](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who)
+[life_expectancy.csv](life_expectancy.csv), [original link](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who)
 
 Code (R Markdown): 
 [preliminary_model.Rmd](preliminary_model.Rmd)
@@ -12,5 +12,4 @@ Paper (pdf):
 
 
 Bibliography (pdf, bib file):
-Last last page in [preliminary_model.pdf](preliminary_model.pdf)
-[references.bib](references.bib)
+Last last page in [preliminary_model.pdf](preliminary_model.pdf), [references.bib](references.bib)
