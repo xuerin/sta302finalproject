@@ -13,3 +13,7 @@ Paper (pdf):
 
 Bibliography (pdf, bib file):
 Last last page in [preliminary_model.pdf](preliminary_model.pdf), [references.bib](references.bib)
+
+
+## Todo for final submission
+1. Create boxplots of residual and each category for categorical variable. A scatterplot is not enough, only good for continuous variables. 
