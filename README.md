@@ -8,6 +8,7 @@ Code (R Markdown):
 [preliminary_model.Rmd](preliminary_model.Rmd)
 
 Paper (pdf):
+[final_report](final_report.pdf)
 [preliminary_model.pdf](preliminary_model.pdf)
 
 
