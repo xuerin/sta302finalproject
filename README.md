@@ -7,8 +7,10 @@ Dataset (csv):
 Code (R Markdown): 
 [preliminary_model.Rmd](preliminary_model.Rmd)
 
-Paper (pdf):
+Final draft (pdf):
 [final_report](final_report.pdf)
+
+First draft (pdf):
 [preliminary_model.pdf](preliminary_model.pdf)
 
 
