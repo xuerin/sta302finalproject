@@ -15,22 +15,31 @@ link-citations: true
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+#log transform
+```{r fig.width = 10, fig.length=12, echo=FALSE, message=FALSE, warning=FALSE}
+library(patchwork)
+all_data <- read.csv("Life_Expectancy_Data.csv")
+all_data <- na.omit(all_data)
+all_data$log_GDP <- log(all_data$GDP)
+all_data$log_expenditure <- log(all_data$percentage.expenditure)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+scatter_plot <- function(xvar, xlab) {
+  ggplot(all_data, aes(x = .data[[xvar]], y = log_GDP)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = paste("log_GDP vs", xlab),
+       x = xlab,
+       y = "log_GDP") +
+  theme_minimal()
+}
 
-```{r cars}
-summary(cars)
+p1 <- scatter_plot("log_expenditure", "Percentage expenditure")
+p2 <- scatter_plot("log_Polio", "Polio")
+p3 <- scatter_plot("Population", "Population")
+p4 <- scatter_plot("Income.composition.of.resources", "Income composition of resources")
+p5 <- scatter_plot("Schooling", "Schooling")
+
+# Combine in layout
+(p1 | p2 | p3) / (p4 | p5)
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
