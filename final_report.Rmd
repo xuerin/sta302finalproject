@@ -11,24 +11,39 @@ nocite: '@*'
 link-citations: true
 ---
 
-### original model ###
-########################
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+all_data <- read.csv("Life_Expectancy_Data.csv")
+all_data <- na.omit(all_data)
+all_data$Status <- as.factor(all_data$Status)
+all_data$bc_GDP <- (all_data$GDP^0.3030303 - 1)/0.3030303
 
+
+# Clean model
+full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
+                   infant.deaths + Alcohol + percentage.expenditure + 
+                   Hepatitis.B + Measles + BMI + under.five.deaths + Polio
+                   + Diphtheria + HIV.AIDS + Population +
+                   thinness..1.19.years + thinness.5.9.years +
+                   Income.composition.of.resources + Schooling,
+                 data = all_data)
+summary(full_model)
+
+
+
+step_model <- step(full_model, direction = "both")
+summary(step_model)
+```
+
+### model 0 using stepwise ###
+##############################
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(MASS)
 
 all_data <- read.csv("Life_Expectancy_Data.csv")
 all_data <- na.omit(all_data)
-
-response <- all_data$GDP
-x0 <- all_data$percentage.expenditure
-x1 <- all_data$Polio
-x2 <- all_data$Population
-x3 <- all_data$Income.composition.of.resources
-x4 <- all_data$Schooling
 all_data$Status <- as.factor(all_data$Status)
 
-model0 <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
+model0 <- lm(GDP ~ Status + percentage.expenditure + Polio + Population + Income.composition.of.resources + Schooling, data = all_data)
 summary(model0)
 
 par(mfrow = c(2, 2))
