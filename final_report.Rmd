@@ -12,6 +12,8 @@ link-citations: true
 ---
 
 ### original model ###
+########################
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(MASS)
 
@@ -37,7 +39,9 @@ bc <- boxcox(model0, plotit = TRUE)
 (lambda_optimal <- bc$x[which.max(bc$y)])
 ``` 
 
+#######################################
 ### model 1 box-cox transformation ###
+#######################################
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 all_data <- read.csv("Life_Expectancy_Data.csv")
@@ -118,36 +122,332 @@ which(abs(mod.dffits)>cutoff.dffits)
 
 
 ```
-
-#### Model 2 log-transformed expenditure ###
+#######################################
+### model 2 transform expenditure #####
+#######################################
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
 all_data <- read.csv("Life_Expectancy_Data.csv")
 all_data <- na.omit(all_data)
 
 all_data$bc_GDP <- (all_data$GDP^0.3030303 - 1)/0.3030303
-all_data$log_expenditure <- log(all_data$percentage.expenditure)
-
-all_data <- all_data[is.finite(all_data$bc_GDP) & is.finite(all_data$log_expenditure), ]
-
-response <- all_data$bc_GDP
-x0 <- all_data$log_expenditure
-x1 <- all_data$Polio
-x2 <- all_data$Population
-x3 <- all_data$Income.composition.of.resources
-x4 <- all_data$Schooling
-
 all_data$Status <- as.factor(all_data$Status)
+all_data$expenditure <- log(all_data$percentage.expenditure)
 
-model2 <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
+all_data <- all_data[is.finite(all_data$expenditure), ]
+
+model2 <- lm(bc_GDP ~ Status + expenditure + Polio + Population + Income.composition.of.resources  
+                              + Schooling, data = all_data)
 summary(model2)
-
-vif(model2)
 
 par(mfrow = c(2, 2))
 plot(model2)
+
+
+mod.resid <- resid(model2)
+mod.fitted <- fitted(model2)
+mod.sresid <- rstandard(model2)
+
+## Response vs. Fitted plot
+plot(mod.fitted,all_data$bc_GDP,xlab="Fitted",ylab="GDP",
+     main="Fitted vs Response")
+abline(a=0,b=1,col="red",lwd=2)
+
+## Residuals vs Fitted plot
+plot(mod.fitted,mod.resid,xlab="Fitted",ylab="Residuals",
+     main="Fitted vs. Residuals")
+abline(h=0,col="blue",lwd=2)
+
+## QQ plot
+qqnorm(mod.sresid); qqline(mod.sresid)
+
+
+## Load car package
+library(car)
+vif(model2)
+
+## Leverage points
+mod.hii <- hatvalues(model2)
+plot(mod.hii,type="h",ylab='hii',main="Leverage values")
+## Define the cutoff for leverage points
+cutoff.leveragepoints <- 2*(6+1)/nrow(all_data)
+cutoff.leveragepoints.bis <- 3*(6+1)/nrow(all_data)
+abline(h=cutoff.leveragepoints,col="red")
+abline(h=cutoff.leveragepoints.bis,col="blue")
+abline(h=0.5,col="green")
+mod.hii
+which(mod.hii>cutoff.leveragepoints)
+
+
+## Outliers
+plot(mod.sresid,type="h")
+abline(h=4,col="red")
+abline(h=-4,col="red")
+which(abs(mod.sresid)>4)
+
+## Influential points
+
+## 1. Cook's distance
+mod.dii <- cooks.distance(model2)
+plot(mod.dii,type="h",ylab="Dii")
+cutoff_dii <- qf(0.5,df1=7,df2=(nrow(all_data)-6-1))
+abline(h=cutoff_dii,col="red")
+abline(h=1,col="blue")
+abline(h=4/nrow(all_data),col="green")
+which(mod.dii>(4/nrow(all_data)))
+## Based on the cutoff 4/n
+
+## 2. Difference in fitted values
+mod.dffits <- dffits(model2)
+plot(mod.dffits,type="h",ylab="DFFITS")
+cutoff.dffits <- 2*sqrt(7/nrow(all_data))
+abline(h=cutoff.dffits,col="red")
+abline(h=-cutoff.dffits,col="red")
+which(abs(mod.dffits)>cutoff.dffits)
+
+## remove invalid points
+remove_invalid <- unique(c(
+  which(mod.hii>cutoff.leveragepoints),
+  which(abs(mod.sresid)>4),
+  which(mod.dii > (4/nrow(all_data))),
+  which(abs(mod.dffits)>cutoff.dffits)
+))
+
+clean_data2 <- all_data[-remove_invalid, ]
+
+# clean model
+
+clean_model2 <- lm(bc_GDP ~ Status + expenditure + Polio + Population + Income.composition.of.resources + Schooling, data = clean_data2)
+summary(clean_model2)
+
+par(mfrow = c(2, 2))
+plot(clean_model2)
+```
+#######################################
+### model 3 squared all predictors ###
+######################################
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+all_data <- read.csv("Life_Expectancy_Data.csv")
+all_data <- na.omit(all_data)
+
+all_data$bc_GDP <- (all_data$GDP^0.3030303 - 1)/0.3030303
+all_data$Status <- as.factor(all_data$Status)
+
+
+model3 <- lm(bc_GDP ~ Status 
+             + percentage.expenditure + I(percentage.expenditure^2)
+             + Polio + I(Polio^2)
+             + Population + I(Population^2)
+             + Income.composition.of.resources + I(Income.composition.of.resources^2)
+             + Schooling + I(Schooling^2),
+             data = all_data)
+summary(model3)
+
+par(mfrow = c(2, 2))
+plot(model3)
+
+
+mod.resid <- resid(model3)
+mod.fitted <- fitted(model3)
+mod.sresid <- rstandard(model3)
+
+## Response vs. Fitted plot
+plot(mod.fitted,all_data$bc_GDP,xlab="Fitted",ylab="GDP",
+     main="Fitted vs Response")
+abline(a=0,b=1,col="red",lwd=2)
+
+## Residuals vs Fitted plot
+plot(mod.fitted,mod.resid,xlab="Fitted",ylab="Residuals",
+     main="Fitted vs. Residuals")
+abline(h=0,col="blue",lwd=2)
+
+## QQ plot
+qqnorm(mod.sresid); qqline(mod.sresid)
+
+
+## Load car package
+library(car)
+vif(model3)
+
+## Leverage points
+mod.hii <- hatvalues(model3)
+plot(mod.hii,type="h",ylab='hii',main="Leverage values")
+## Define the cutoff for leverage points
+cutoff.leveragepoints <- 2*(6+1)/nrow(all_data)
+cutoff.leveragepoints.bis <- 3*(6+1)/nrow(all_data)
+abline(h=cutoff.leveragepoints,col="red")
+abline(h=cutoff.leveragepoints.bis,col="blue")
+abline(h=0.5,col="green")
+mod.hii
+which(mod.hii>cutoff.leveragepoints)
+
+
+## Outliers
+plot(mod.sresid,type="h")
+abline(h=4,col="red")
+abline(h=-4,col="red")
+which(abs(mod.sresid)>4)
+
+## The data point 1546 and 877 are outliers
+
+## Influential points
+
+## 1. Cook's distance
+mod.dii <- cooks.distance(model3)
+plot(mod.dii,type="h",ylab="Dii")
+cutoff_dii <- qf(0.5,df1=7,df2=(nrow(all_data)-6-1))
+abline(h=cutoff_dii,col="red")
+abline(h=1,col="blue")
+abline(h=4/nrow(all_data),col="green")
+which(mod.dii>(4/nrow(all_data)))
+## Based on the cutoff 4/n
+
+## 2. Difference in fitted values
+mod.dffits <- dffits(model3)
+plot(mod.dffits,type="h",ylab="DFFITS")
+cutoff.dffits <- 2*sqrt(7/nrow(all_data))
+abline(h=cutoff.dffits,col="red")
+abline(h=-cutoff.dffits,col="red")
+which(abs(mod.dffits)>cutoff.dffits)
+
+## remove invalid points
+remove_invalid <- unique(c(
+  which(mod.hii>cutoff.leveragepoints),
+  which(abs(mod.sresid)>4),
+  which(mod.dii > (4/nrow(all_data))),
+  which(abs(mod.dffits)>cutoff.dffits)
+))
+
+clean_data3 <- all_data[-remove_invalid, ]
+
+# clean model
+
+clean_model3 <- lm(bc_GDP ~ Status 
+             + percentage.expenditure + I(percentage.expenditure^2)
+             + Polio + I(Polio^2)
+             + Population + I(Population^2)
+             + Income.composition.of.resources + I(Income.composition.of.resources^2)
+             + Schooling + I(Schooling^2), data = clean_data3)
+summary(clean_model3)
+
+par(mfrow = c(2, 2))
+plot(clean_model3)
 ```
 
+#######################################################
+## model 4 log-population,squared expenditure/Polion ##
+#######################################################
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+all_data <- read.csv("Life_Expectancy_Data.csv")
+all_data <- na.omit(all_data)
+
+all_data$bc_GDP <- (all_data$GDP^0.3030303 - 1)/0.3030303
+all_data$Status <- as.factor(all_data$Status)
+
+#all_data$expenditure <- log(all_data$percentage.expenditure)
+all_data$t_Population <- log(all_data$Population)
+all_data <- all_data[ is.finite(all_data$t_Population) , ]
+
+model4 <- lm(bc_GDP ~ Status 
+             + percentage.expenditure + I(percentage.expenditure^2)
+             + Polio + I(Polio^2)
+             + t_Population 
+             + Income.composition.of.resources
+             + Schooling,
+             data = all_data)
+summary(model4)
+
+par(mfrow = c(2, 2))
+plot(model4)
+
+
+mod.resid <- resid(model4)
+mod.fitted <- fitted(model4)
+mod.sresid <- rstandard(model4)
+
+## Response vs. Fitted plot
+plot(mod.fitted,all_data$bc_GDP,xlab="Fitted",ylab="GDP",
+     main="Fitted vs Response")
+abline(a=0,b=1,col="red",lwd=2)
+
+## Residuals vs Fitted plot
+plot(mod.fitted,mod.resid,xlab="Fitted",ylab="Residuals",
+     main="Fitted vs. Residuals")
+abline(h=0,col="blue",lwd=2)
+
+## QQ plot
+qqnorm(mod.sresid); qqline(mod.sresid)
+
+
+## Load car package
+library(car)
+vif(model4)
+
+## Leverage points
+mod.hii <- hatvalues(model4)
+plot(mod.hii,type="h",ylab='hii',main="Leverage values")
+## Define the cutoff for leverage points
+cutoff.leveragepoints <- 2*(6+1)/nrow(all_data)
+cutoff.leveragepoints.bis <- 3*(6+1)/nrow(all_data)
+abline(h=cutoff.leveragepoints,col="red")
+abline(h=cutoff.leveragepoints.bis,col="blue")
+abline(h=0.5,col="green")
+mod.hii
+which(mod.hii>cutoff.leveragepoints)
+
+
+## Outliers
+plot(mod.sresid,type="h")
+abline(h=4,col="red")
+abline(h=-4,col="red")
+which(abs(mod.sresid)>4)
+
+## Influential points
+## 1. Cook's distance
+mod.dii <- cooks.distance(model4)
+plot(mod.dii,type="h",ylab="Dii")
+cutoff_dii <- qf(0.5,df1=7,df2=(nrow(all_data)-6-1))
+abline(h=cutoff_dii,col="red")
+abline(h=1,col="blue")
+abline(h=4/nrow(all_data),col="green")
+which(mod.dii>(4/nrow(all_data)))
+## Based on the cutoff 4/n
+
+## 2. Difference in fitted values
+mod.dffits <- dffits(model4)
+plot(mod.dffits,type="h",ylab="DFFITS")
+cutoff.dffits <- 2*sqrt(7/nrow(all_data))
+abline(h=cutoff.dffits,col="red")
+abline(h=-cutoff.dffits,col="red")
+which(abs(mod.dffits)>cutoff.dffits)
+
+## remove invalid points
+remove_invalid <- unique(c(
+  which(mod.hii>cutoff.leveragepoints),
+  which(abs(mod.sresid)>4),
+  which(mod.dii > (4/nrow(all_data))),
+  which(abs(mod.dffits)>cutoff.dffits)
+))
+
+clean_data4 <- all_data[-remove_invalid, ]
+
+# clean model
+
+clean_model4 <- lm(bc_GDP ~ Status 
+             + percentage.expenditure + I(percentage.expenditure^2)
+             + Polio + I(Polio^2)
+             + t_Population 
+             + Income.composition.of.resources
+             + Schooling, data = clean_data4)
+summary(clean_model4)
+
+par(mfrow = c(2, 2))
+plot(clean_model4)
+```
 
 
 
