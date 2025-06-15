@@ -555,9 +555,8 @@ abline(h=cutoff.dffits,col="red")
 abline(h=-cutoff.dffits,col="red")
 which(abs(mod.dffits)>cutoff.dffits)
 
-## remove invalid points
+## remove outliers
 remove_invalid <- unique(c(
-  which(mod.hii>cutoff.leveragepoints),
   which(abs(mod.sresid)>4),
 ))
 
