@@ -110,8 +110,8 @@ plot(model5)
 # Model 6 (Final Model)
 model6 <- lm(bc_GDP ~ Status +I(Total.expenditure^2) +Polio
              + I(log(Population))
-             + I(Income.composition.of.resources^2)
-             +S chooling,
+             + Income.composition.of.resources
+             + I(Schooling^2),
              data = all_data)
 
 summary(model6)
@@ -198,8 +198,8 @@ clean_model6 <- lm(bc_GDP ~ Status
              +I(Total.expenditure^2)
              + Polio
              + I(log(Population))
-             + I(Income.composition.of.resources^2)
-             + Schooling,
+             + Income.composition.of.resources
+             + (Schooling^2),
              data = clean_data6)
 summary(clean_model6)
 
