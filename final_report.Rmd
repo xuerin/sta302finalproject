@@ -12,7 +12,7 @@ link-citations: true
 ---
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
-              "kableExtra", "leaps", "ggplot2", "patchwork", "car")
+              "kableExtra", "leaps", "ggplot2", "patchwork", "car", "MASS")
 lapply(packages, require, character.only = T)
 set.seed(320)
 all_data <- read.csv("life_expectancy.csv")
@@ -67,7 +67,7 @@ par(mfrow = c(2, 2))
 plot(model2)
 
 # Box-Cox transformation(λ=0.1010101)
-bc <- boxcox(model0, plotit = TRUE)
+bc <- boxcox(model2, plotit = TRUE)
 (lambda_optimal <- bc$x[which.max(bc$y)])
 
 all_data$bc_GDP <- (all_data$GDP^0.1010101 - 1)/0.1010101
