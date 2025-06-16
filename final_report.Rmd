@@ -11,6 +11,14 @@ nocite: '@*'
 link-citations: true
 ---
 
+```{r}
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
+              "kableExtra", "leaps", "ggplot2", "patchwork", "MASS")
+lapply(packages, require, character.only = T)
+set.seed(420)
+all_data <- read.csv("life_expectancy.csv")
+```
+
 #stepwise
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 all_data <- read.csv("life_expectancy.csv")
@@ -59,9 +67,14 @@ summary(model2)
 par(mfrow = c(2, 2))
 plot(model2)
 
+# Fit a model with original GDP and desired predictors (same as model3)
+temp_model <- lm(GDP ~ Status + Total.expenditure + Polio + Population +
+                 Income.composition.of.resources + Schooling)
 # Box-Cox transformation(λ=0.1010101)
-bc <- boxcox(model0, plotit = TRUE)
+bc <- boxcox(temp_model, plotit = TRUE)
 (lambda_optimal <- bc$x[which.max(bc$y)])
+
+all_data$bc_GDP <- (all_data$GDP^lambda_optimal - 1) / lambda_optimal
 
 all_data$bc_GDP <- (all_data$GDP^0.1010101 - 1)/0.1010101
 all_data$Status <- as.factor(all_data$Status)
@@ -104,7 +117,7 @@ plot(model5)
 model6 <- lm(bc_GDP ~ Status +I(Total.expenditure^2) +Polio
              + I(log(Population))
              + I(Income.composition.of.resources^2)
-             +S chooling,
+             + Schooling,
              data = all_data)
 
 summary(model6)
