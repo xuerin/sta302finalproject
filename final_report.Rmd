@@ -97,12 +97,11 @@ plot(model4)
 
 # Model 5 Combination of box-cox and squared
 
-model5 <- lm(bc_GDP ~ Status + Total.expenditure +Polio
+model5 <- lm(bc_GDP ~ Status + Total.expenditure + I(Polio^2)
              + I(Population^2)
-             + I(Income.composition.of.resources^2)
+             + Income.composition.of.resources
              + Schooling,
              data = all_data)
-
 summary(model5)
 
 par(mfrow = c(2, 2))
