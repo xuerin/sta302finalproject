@@ -198,8 +198,8 @@ clean_model6 <- lm(bc_GDP ~ Status
              +I(Total.expenditure^2)
              + Polio
              + I(log(Population))
-             + Income.composition.of.resources
-             +I(Schooling^2),
+             + I(Income.composition.of.resources^2)
+             + Schooling,
              data = clean_data6)
 summary(clean_model6)
 
