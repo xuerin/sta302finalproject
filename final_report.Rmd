@@ -88,10 +88,10 @@ plot(model4)
 
 # Model 5 (box-cox & polynomial)
 
-model5 <- lm(bc_GDP ~ Status +I(Total.expenditure^2) +Polio
-             + I(log(Population))
-             + Income.composition.of.resources
-             +I(Schooling^2),
+model5 <- lm(bc_GDP ~ Status + Total.expenditure +Polio
+             + I(Population^2)
+             + I(Income.composition.of.resources^2)
+             + Schooling,
              data = all_data)
 
 summary(model5)
@@ -99,18 +99,31 @@ summary(model5)
 par(mfrow = c(2, 2))
 plot(model5)
 
-vif(model5)
 
-# AIC & BIC
-aic_results <- AIC(model1, model2, model3, model4, model5)
-bic_results <- BIC(model1, model2, model3, model4, model5)
+# Model 6 (Final Model)
+model6 <- lm(bc_GDP ~ Status +I(Total.expenditure^2) +Polio
+             + I(log(Population))
+             + I(Income.composition.of.resources^2)
+             +S chooling,
+             data = all_data)
+
+summary(model6)
+
+par(mfrow = c(2, 2))
+plot(model6)
+
+vif(model6)
+
+aic_results <- AIC(model1, model2, model3, model4, model5, model6)
+bic_results <- BIC(model1, model2, model3, model4, model5, model6)
 print(aic_results)
 print(bic_results)
 
-#check model 5
-mod.resid <- resid(model5)
-mod.fitted <- fitted(model5)
-mod.sresid <- rstandard(model5)
+
+# check model6
+mod.resid <- resid(model6)
+mod.fitted <- fitted(model6)
+mod.sresid <- rstandard(model6)
 
 ## Response vs. Fitted plot
 plot(mod.fitted,all_data$bc_GDP,xlab="Fitted",ylab="GDP",
@@ -127,7 +140,7 @@ qqnorm(mod.sresid); qqline(mod.sresid)
 
 
 ## Leverage points
-mod.hii <- hatvalues(model5)
+mod.hii <- hatvalues(model6)
 plot(mod.hii,type="h",ylab='hii',main="Leverage values")
 ## Define the cutoff for leverage points
 cutoff.leveragepoints <- 2*(6+1)/nrow(all_data)
@@ -148,7 +161,7 @@ which(abs(mod.sresid)>4)
 ## Influential points
 
 ## 1. Cook's distance
-mod.dii <- cooks.distance(model5)
+mod.dii <- cooks.distance(model6)
 plot(mod.dii,type="h",ylab="Dii")
 cutoff_dii <- qf(0.5,df1=7,df2=(nrow(all_data)-6-1))
 abline(h=cutoff_dii,col="red")
@@ -158,7 +171,7 @@ which(mod.dii>(4/nrow(all_data)))
 ## Based on the cutoff 4/n
 
 ## 2. Difference in fitted values
-mod.dffits <- dffits(model5)
+mod.dffits <- dffits(model6)
 plot(mod.dffits,type="h",ylab="DFFITS")
 cutoff.dffits <- 2*sqrt(7/nrow(all_data))
 abline(h=cutoff.dffits,col="red")
@@ -170,21 +183,18 @@ remove_invalid <- unique(c(
   which(abs(mod.sresid)>4)
 ))
 
-clean_data5 <- all_data[-remove_invalid, ]
+clean_data6 <- all_data[-remove_invalid, ]
 
 # clean model
 
-clean_model5 <- lm(bc_GDP ~ Status 
+clean_model6 <- lm(bc_GDP ~ Status 
              +I(Total.expenditure^2)
              + Polio
              + I(log(Population))
              + Income.composition.of.resources
              +I(Schooling^2),
-             data = clean_data5)
-summary(clean_model5)
+             data = clean_data6)
+summary(clean_model6)
 
 par(mfrow = c(2, 2))
-plot(clean_model5)
-```
-
-
+plot(clean_model6)
