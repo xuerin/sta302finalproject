@@ -101,7 +101,13 @@ plot(model5)
 
 vif(model5)
 
-#check model
+# AIC & BIC
+aic_results <- AIC(model1, model2, model3, model4, model5)
+bic_results <- BIC(model1, model2, model3, model4, model5)
+print(aic_results)
+print(bic_results)
+
+#check model 5
 mod.resid <- resid(model5)
 mod.fitted <- fitted(model5)
 mod.sresid <- rstandard(model5)
