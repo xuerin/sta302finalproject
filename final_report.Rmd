@@ -10,8 +10,14 @@ bibliography: references.bib
 nocite: '@*'
 link-citations: true
 ---
+```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
+              "kableExtra", "leaps", "ggplot2", "patchwork", "car", "MASS")
+lapply(packages, require, character.only = T)
+set.seed(320)
+all_data <- read.csv("life_expectancy.csv")
+```
 
-#stepwise
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
@@ -23,7 +29,8 @@ hist(all_data$Polio)
 hist(all_data$Total.expenditure)
 hist(all_data$Income.composition.of.resources)
 
-# Clean model
+# Cleaned full model
+#### This is the original model #######
 full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
                    infant.deaths + Alcohol + Total.expenditure + percentage.expenditure+
                    Hepatitis.B + Measles + BMI + under.five.deaths + Polio
@@ -43,7 +50,8 @@ all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
 all_data$Status <- as.factor(all_data$Status)
 
-# model1 result of stepwise
+### model1 result of stepwise ####
+
 model1 <- lm(GDP ~ Status + Total.expenditure + Polio+ percentage.expenditure + Income.composition.of.resources
                   + Schooling , data = all_data)
 summary(model1)
@@ -51,7 +59,8 @@ summary(model1)
 par(mfrow = c(2, 2))
 plot(model1)
 
-# model2 replace percentage expenditure with population for meaningful interpretation of model coefficients
+## model2 replace percentage expenditure with population for meaningful interpretation of model coefficients
+
 model2 <- lm(GDP ~ Status + Total.expenditure + Polio + Population + Income.composition.of.resources
                   + Schooling , data = all_data)
 summary(model2)
@@ -59,14 +68,14 @@ summary(model2)
 par(mfrow = c(2, 2))
 plot(model2)
 
-# Box-Cox transformation(λ=0.1010101)
-bc <- boxcox(model0, plotit = TRUE)
+## Model 3 Box_Cox tansformed response variable y
+
+bc <- boxcox(model2, plotit = TRUE)
 (lambda_optimal <- bc$x[which.max(bc$y)])
 
 all_data$bc_GDP <- (all_data$GDP^0.1010101 - 1)/0.1010101
 all_data$Status <- as.factor(all_data$Status)
 
-# Model 3 (box-cox)
 model3 <- lm(bc_GDP ~ Status + Total.expenditure + Polio + Population 
              + Income.composition.of.resources  + Schooling, data = all_data)
 summary(model3)
@@ -75,7 +84,7 @@ par(mfrow = c(2, 2))
 plot(model3)
 
 
-# Model 4 (polynomial)
+# Model 4 Only squared Polio and Income
 
 model4 <- lm(GDP ~ Status + Total.expenditure
                           + I(Polio^2) + Population + I(Income.composition.of.resources^2)
@@ -86,14 +95,13 @@ par(mfrow = c(2, 2))
 plot(model4)
 
 
-# Model 5 (box-cox & polynomial)
+# Model 5 Combination of box-cox and squared
 
-model5 <- lm(bc_GDP ~ Status + Total.expenditure +Polio
+model5 <- lm(bc_GDP ~ Status + Total.expenditure + I(Polio^2)
              + I(Population^2)
-             + I(Income.composition.of.resources^2)
+             + Income.composition.of.resources
              + Schooling,
              data = all_data)
-
 summary(model5)
 
 par(mfrow = c(2, 2))
@@ -101,10 +109,12 @@ plot(model5)
 
 
 # Model 6 (Final Model)
+# the best model when combine box-cox and squared
+
 model6 <- lm(bc_GDP ~ Status +I(Total.expenditure^2) +Polio
              + I(log(Population))
-             + I(Income.composition.of.resources^2)
-             +S chooling,
+             + Income.composition.of.resources
+             + I(Schooling^2),
              data = all_data)
 
 summary(model6)
@@ -112,7 +122,10 @@ summary(model6)
 par(mfrow = c(2, 2))
 plot(model6)
 
+#check multicolinearity
 vif(model6)
+
+#check AIC & BIC for all model we have
 
 aic_results <- AIC(model1, model2, model3, model4, model5, model6)
 bic_results <- BIC(model1, model2, model3, model4, model5, model6)
@@ -120,7 +133,7 @@ print(aic_results)
 print(bic_results)
 
 
-# check model6
+# some plots
 mod.resid <- resid(model6)
 mod.fitted <- fitted(model6)
 mod.sresid <- rstandard(model6)
@@ -138,6 +151,7 @@ abline(h=0,col="blue",lwd=2)
 ## QQ plot
 qqnorm(mod.sresid); qqline(mod.sresid)
 
+## check leverage point/ influential point/ outliers
 
 ## Leverage points
 mod.hii <- hatvalues(model6)
@@ -150,7 +164,6 @@ abline(h=cutoff.leveragepoints.bis,col="blue")
 abline(h=0.5,col="green")
 mod.hii
 which(mod.hii>cutoff.leveragepoints)
-
 
 ## Outliers
 plot(mod.sresid,type="h")
@@ -178,7 +191,8 @@ abline(h=cutoff.dffits,col="red")
 abline(h=-cutoff.dffits,col="red")
 which(abs(mod.dffits)>cutoff.dffits)
 
-## remove invalid points
+## remove outliers
+
 remove_invalid <- unique(c(
   which(abs(mod.sresid)>4)
 ))
@@ -192,7 +206,7 @@ clean_model6 <- lm(bc_GDP ~ Status
              + Polio
              + I(log(Population))
              + Income.composition.of.resources
-             +I(Schooling^2),
+             + I(Schooling^2),
              data = clean_data6)
 summary(clean_model6)
 
