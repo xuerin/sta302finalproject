@@ -22,7 +22,8 @@ The dataset used in this project is titled *Life Expectancy* (WHO), sourced from
 
 While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.  
 
-Multiple linear regression is an appropriate method for analysis, as the data set consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
+The preliminary model is prone to multiple violations of model assumption, but, multiple linear regression is an appropriate method for analysis, as the scatterplots of the response and each predictor show a huge potential for linear association, constant error variance, and uncorrelated and normal errors, through diagnostic procedures like predictor transformations. 
+
 \
 Table 1: Variables used in the model
 
@@ -36,8 +37,8 @@ Table 1: Variables used in the model
 | Income composition of resources| Human Development Index in terms of income composition (index from 0 to 1)     | Continuous variable       |
 | Schooling                      | Number of years of schooling (years)                                           | Continuous variable       |
 
-The model includes five continuous and one categorical predictors. Since the dataset contains a categorical variable, no transformation is needed. All six predictors are continuous and directly related to our question. They reflect government investment in health, education, and social equity, all of which may influence a country’s GDP.
 
+The model includes five continuous and one categorical predictors. All six predictors are continuous and directly related to our question. They reflect government investment in health, education, and social equity, all of which may influence a country’s GDP.  
 Table 2: Continuous variables summary
 
 | Variable                         |   Mean   |   Std   |   Min   |   Q1   | Median |   Q3   |   Max    |
@@ -81,7 +82,7 @@ scatter_plot <- function(xvar, xlab) {
 }
 
 # Create plots
-p1 <- scatter_plot("percentage.expenditure", "Percentage expenditure")
+p1 <- scatter_plot("percentage.expenditure", "Health ercentage expenditure")
 p2 <- scatter_plot("Polio", "Polio")
 p3 <- scatter_plot("Population", "Population")
 p4 <- scatter_plot("Income.composition.of.resources", "Income composition of resources")
@@ -90,8 +91,7 @@ p5 <- scatter_plot("Schooling", "Schooling")
 # Combine in layout
 (p1 | p2 | p3) / (p4 | p5)
 ```
-GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.
-
+GDP increases with an increase in health percentage expenditure in a rather compelling linear manner, although the clustering near the lower ends of the domain is concerning due to outliers in countries that are experiencing geopolitical turmoil. GDP anf polio as well as income composition or resources and schooling demonstrate weaker positive trends, looking more quadratic, most likely with leverage points at the tails. It's clear that there are bad leverage points in GDP and population. In the context of geography and the complexity of individual states, one can suspend their disbelief easily about certain leverage points, but nonetheless, these need to be dealt with to provide a more accurate prediction of GDP with the set predictors at hand. 
 
 Figure 2: Histogram of GDP & numeric predictors  
 \
@@ -167,15 +167,30 @@ combined_plot &
   theme(plot.margin = margin(1, 1, 1, 1, "pt")) &
   plot_layout(guides = "collect")
 ```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create a common theme with smaller text and better use of space
+compact_theme <- theme(
+  plot.title = element_text(size = 9, face = "bold"),
+  axis.title = element_text(size = 8),
+  axis.text = element_text(size = 7),
+  plot.margin = margin(3, 3, 3, 3, "pt")
+)
+ggplot(all_data, aes(x = Status, y = GDP)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = "GDP per Capita by Country Status",
+       x = "Status",
+       y = "GDP per Capita") + coord_cartesian(ylim = c(0, 1e+05))
 
-GDP, percentage expenditure, and population are strongly right-skewed, with mostly low values. Schooling and income composition are slightly left-skewed, clustering at the high end. Income composition is also bimodal. Polio rates are highly left-skewed. Polio, income composition, and schooling show potential outliers at the low end. These patterns demonstrate how the predictors vary and help explain differences in GDP. 
+```
+GDP, percentage expenditure, and population are strongly right-skewed, with mostly low values. Schooling and income composition are slightly left-skewed, clustering at the high end. Income composition is also bimodal, although there is potential for a bell-curve-like shape. Polio rates are highly left-skewed. Since country status is a categorical predictor, the boxplot graph is better suited to evaluating the normality assumption. Developed countries have a higher median GDP per capital and wider IQR range, which indicates greater variability than developing countries, which violates a model assumption. Also, developing countries appear highly skewed to the right, with most countries clustered at low GDP per capital values. The long tail of outliers stretching upward indicate a few developing countries with relatively high GDPs. In context, these outlier countries like Malaysia, Mexico, Thailand, Turkey or Chile are developing countries, but are often classified more further by the World Bank as upper-middle-income economies because they clearly act as outliers compared to the rest of the developing world. 
+
 # Primary model results and diagnostics
 
 # Model seleection
 
 # Final model inference and results 
 
-# Discussion and conclusion 
+# Discussion and conclusion `
 
 # Author contributions
 
