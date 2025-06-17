@@ -11,28 +11,164 @@ nocite: '@*'
 link-citations: true
 ---
 # Introduction
-Gross domestic product (GDP) is a widely used measure of a country’s economic output, representing the total market value of goods and services produced within its borders over a specified period. It serves as a key indicator of national economic performance and enables comparison across countries and time periods. By standard economic theory, GDP is influenced by components such as consumer spending, government expenditures, investment in capital goods, and net exports. In addition, factors like human capital, infrastructure, technological innovation, and political stability also play vital roles in sustaining economic growth.
+Gross domestic product (GDP) is a widely used measure of a country’s economic output, representing the total market value of goods and services produced within its borders over a specified period. It serves as a key indicator of national economic performance and enables comparison across countries and time periods. From economic theory, GDP is influenced by components such as consumer spending, government expenditures, investment in capital goods, and net exports. Factors like human capital, infrastructure, technological innovation, and political stability are also vital.
 
-This project applies multiple linear regression (MLR) to investigate the extent to which health-related and socioeconomic factors are associated with GDP, with the research question being: *To what extent do government spending on health and socioeconomic resources affect a country’s GDP?* Specifically, country status (developed vs. developing), percentage expenditure on health, polio immunization coverage, income composition of resources, years of schooling, and population are the combination of continuous and categorical predictors used to explain the extent in which they affect GDP, the response, in countries around the world. Spending money on health, as indicated by the percentage expenditure on health and polio immunization coverage, can improve productivity, leading to greater economic growth. Similarly, the income composition of resources and country status are socioeconomic factors that can also explain GDP trends. Other predictors, such as the number of years of schooling and population, are also important variables to consider for a country’s overall economic growth.
+This project applies multiple linear regression (MLR) to investigate the extent to which health-related and socioeconomic factors are associated with GDP, with the research question being: *To what extent do government spending on health and socioeconomic resources affect a country’s GDP?* Specifically, country status (developed vs. developing), percentage expenditure on health, polio immunization coverage, income composition of resources, years of schooling, and population are the combination of continuous and categorical predictors used to explain the extent in which they affect GDP in countries around the world. Health spending, represented by percent of a country's expenditure and polio immunization coverage, has been shown to enhance productivity, and income composition and national development status reflect broader socioeconomic conditions. Education and population are also recognized as structural drivers of economic growth because educated workers increases human capital, research and innovation for better products, processes and overall economic advancement. 
 
-These variables are examined for their ability to explain cross-country variation in GDP from a traditional economic standpoint. Health spending, represented by expenditure and immunization coverage, has been shown to enhance productivity, while income composition and national development status reflect broader socioeconomic conditions. Education and population are also recognized as structural drivers of economic growth because educated workers builds human capital and education encourages research and innovation to build better products, processes and overall economic advancement. 
+As economic theory suggests a positive relationship between GDP and improved development indicators, and estimating a linear model allows us to quantify the individual contribution of each predictor to GDP while controlling for the others, a positive relationship between GDP and indicated predictors can be expected. The focus of this analysis is on interpretability, to understand how each predictor relates to economic output and to support evidence-based approaches to development and policy planning.  
 
-As economic theory suggests a positive relationship between GDP and improved development indicators, the application of MLR is appropriate for this context, and estimating a linear model facilitates the quantification of each predictor’s contribution to GDP while accounting for the influence of other variables. The focus of the analysis is on interpretability, aiming to understand how each factor relates to economic output and to support evidence-based approaches to development and policy planning.  
-
-# Data Description
+# Data description
 The dataset used in this project is titled *Life Expectancy* (WHO), sourced from *Kaggle* (Kumar, 2018). Its primary usage is for health data analysis. Data collectors combined publicly available data from the *World Health Organization* (WHO) and the *United Nations* (UN), which were gathered through national health departments, structured questionnaires, and annual statistical submissions by participating countries (World Health Organization, n.d.; United Nations, n.d.).  
 
 While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.  
 
 Multiple linear regression is an appropriate method for analysis, as the data set consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
+\
+Table 1: Variables used in the model
 
-GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
+| **Variable**                    | **Description**                                                                 | **Type**              |
+|--------------------------------|---------------------------------------------------------------------------------|------------------------|
+| GDP                            | Gross Domestic Product per capita (USD)                                        | Response variable      |
+| Status                         | Developed or Developing status                                                 | Categorical variable   |
+| Percentage expenditure         | Expenditure on health as a percentage of Gross Domestic Product per capita (%) | Continuous variable       |
+| Polio                          | Polio immunization coverage among 1-year-olds (%)                              | Continuous variable       |
+| Population                     | Population of the country                                                      | Continuous variable       |
+| Income composition of resources| Human Development Index in terms of income composition (index from 0 to 1)     | Continuous variable       |
+| Schooling                      | Number of years of schooling (years)                                           | Continuous variable       |
 
-GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP. 
+The model includes five continuous and one categorical predictors. Since the dataset contains a categorical variable, no transformation is needed. All six predictors are continuous and directly related to our question. They reflect government investment in health, education, and social equity, all of which may influence a country’s GDP.
+
+Table 2: Continuous variables summary
+
+| Variable                         |   Mean   |   Std   |   Min   |   Q1   | Median |   Q3   |   Max    |
+|----------------------------------|----------|---------|---------|--------|--------|--------|----------|
+| GDP                              | 7483.16  | 14270.17| 1.68    | 463.94 |1766.95| 5910.81| 119172.74|
+| Percentage expenditure           | 738.25   | 1987.91 | 0.01    | 4.69   | 64.91  |441.53  |19479.91  |
+| Polio                            | 82.55    | 23.43   | 3.00    | 78.00  | 93.00  | 97.00  |99.00   |
+| Population                       | 1.28e+07 | 6.10e+07| 34.00   | 1.96e+05|1.39e+06|7.42e+06|1.29e+09  |
+| Income composition of resources  | 0.63     | 0.21    | 0.00    | 0.49   | 0.68   | 0.78   | 0.95     |
+| Schooling                        | 11.99    | 3.36    | 0.00    | 10.10   | 12.30  | 14.30  | 20.70    |
+
+Table 3: Status (categorical variable) frequency
+
+| Status     | Frequency |
+|------------|-----------|
+| Developing | 2426      |
+| Developed  | 512       |
+| **Total**  | 2938      |
 
 
-# Data description
+Figure 1: Scatter plots of GDP against numeric predictors  
+```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
+packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
+              "kableExtra", "leaps", "ggplot2", "patchwork")
+lapply(packages, require, character.only = T)
+set.seed(420)
+all_data <- read.csv("life_expectancy.csv")
+```
 
+```{r fig.width = 10, fig.length=12, echo=FALSE, message=FALSE, warning=FALSE}
+scatter_plot <- function(xvar, xlab) {
+  ggplot(all_data, aes_string(x = xvar, y = "GDP")) +
+    geom_point(color = "black", alpha = 0.6) +
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +
+    labs(
+      title = paste("GDP vs", xlab),
+      x = xlab,
+      y = "GDP"
+    ) +
+    theme_minimal()
+}
+
+# Create plots
+p1 <- scatter_plot("percentage.expenditure", "Percentage expenditure")
+p2 <- scatter_plot("Polio", "Polio")
+p3 <- scatter_plot("Population", "Population")
+p4 <- scatter_plot("Income.composition.of.resources", "Income composition of resources")
+p5 <- scatter_plot("Schooling", "Schooling")
+
+# Combine in layout
+(p1 | p2 | p3) / (p4 | p5)
+```
+GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.
+
+
+Figure 2: Histogram of GDP & numeric predictors  
+\
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create a common theme with smaller text and better use of space
+compact_theme <- theme(
+  plot.title = element_text(size = 9, face = "bold"),
+  axis.title = element_text(size = 8),
+  axis.text = element_text(size = 7),
+  plot.margin = margin(3, 3, 3, 3, "pt")
+)
+
+# Create the six histograms with the compact theme
+p1 <- ggplot(all_data, aes(x = GDP)) +
+  geom_histogram(binwidth = 1000, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of GDP", x = "GDP", y = "Frequency") +
+  scale_x_continuous(
+    limits = c(0, 50000),          # Set axis range from 0 to 50,000
+    breaks = seq(0, 50000, 10000), # Set tick marks at intervals of 10,000
+    labels = scales::comma          # Format numbers with commas
+  ) +
+  compact_theme
+
+p2 <- ggplot(all_data, aes(x = percentage.expenditure)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of % Expenditure", x = "% Expenditure", y = "Frequency") +
+  scale_x_continuous(
+    limits = c(0, 100),        # Reduced axis range from 0 to 100
+    breaks = seq(0, 100, 20),  # Set tick marks at intervals of 20
+    labels = scales::comma      # Format numbers with commas
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),        # Y-axis range from 0 to 100
+    breaks = seq(0, 100, 20)   # Y-axis tick marks at intervals of 20
+  ) +
+  compact_theme
+
+p3 <- ggplot(all_data, aes(x = Polio)) +
+  geom_histogram(binwidth = 2, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Polio", x = "Polio", y = "Frequency") +
+  compact_theme
+
+p4 <- ggplot(all_data, aes(x = Population)) +
+  geom_histogram(binwidth = 10000000, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Population", x = "Population (billions)", y = "Frequency") +
+  scale_x_continuous(
+    limits = c(0, 1.2e9),                   # X-axis range from 0 to 1.2 billion
+    breaks = seq(0, 1.2e9, 0.2e9),          # X-axis tick marks at intervals of 0.2 billion
+    labels = function(x) x/1e9              # Format as billions (0, 0.2, 0.4, etc.)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 500),                    # Y-axis range from 0 to 2500
+    breaks = seq(0, 500, 100)              # Y-axis tick marks at intervals of 500
+  ) +
+  compact_theme
+
+p5 <- ggplot(all_data, aes(x = Income.composition.of.resources)) +
+  geom_histogram(binwidth = 0.02, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Income Composition", x = "Income Composition", y = "Frequency") +
+  compact_theme
+
+p6 <- ggplot(all_data, aes(x = Schooling)) +
+  geom_histogram(binwidth = 0.5, fill = "skyblue", color = "white") +
+  labs(title = "Distribution of Schooling", x = "Schooling", y = "Frequency") +
+  compact_theme
+
+# Use patchwork to arrange plots with custom layout
+library(patchwork)
+combined_plot <- (p1 | p2 | p3) / (p4 | p5 | p6)
+
+# Apply global theme adjustments to the combined plot
+combined_plot & 
+  theme(plot.margin = margin(1, 1, 1, 1, "pt")) &
+  plot_layout(guides = "collect")
+```
+
+GDP, percentage expenditure, and population are strongly right-skewed, with mostly low values. Schooling and income composition are slightly left-skewed, clustering at the high end. Income composition is also bimodal. Polio rates are highly left-skewed. Polio, income composition, and schooling show potential outliers at the low end. These patterns demonstrate how the predictors vary and help explain differences in GDP. 
 # Primary model results and diagnostics
 
 # Model seleection
