@@ -18,11 +18,11 @@ This project applies multiple linear regression (MLR) to investigate the extent 
 As economic theory suggests a positive relationship between GDP and improved development indicators, and estimating a linear model allows us to quantify the individual contribution of each predictor to GDP while controlling for the others, a positive relationship between GDP and indicated predictors can be expected. The focus of this analysis is on interpretability, to understand how each predictor relates to economic output and to support evidence-based approaches to development and policy planning.  
 
 # Data description
-The dataset used in this project is titled *Life Expectancy* (WHO), sourced from *Kaggle* (Kumar, 2018). Its primary usage is for health data analysis. Data collectors combined publicly available data from the *World Health Organization* (WHO) and the *United Nations* (UN), which were gathered through national health departments, structured questionnaires, and annual statistical submissions by participating countries (World Health Organization, n.d.; United Nations, n.d.).  
+The dataset used in this project is titled *Life Expectancy* (WHO), sourced from *Kaggle* (Kumar, 2018). Its primary usage is for health data analysis. Data collectors combined publicly available data from the *World Health Organization* (WHO) and the *United Nations* (UN), which were gathered through national health departments, structured questionnaires, and annual statistical submissions by participating countries (World Health Organization, n.d.; United Nations, n.d.). The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth.  
 
-While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.  
+While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables that align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in GDP.  
 
-The preliminary model is prone to multiple violations of model assumption, but, multiple linear regression is an appropriate method for analysis, as the scatterplots of the response and each predictor show a huge potential for linear association, constant error variance, and uncorrelated and normal errors, through diagnostic procedures like predictor transformations. 
+The preliminary model is prone to multiple violations of model assumption, but multiple linear regression is still an appropriate method for analysis, as the scatterplots of the response and each predictor show a huge potential for linear association, constant error variance, and uncorrelated and normal errors, through diagnostic procedures like predictor transformations. 
 
 \
 Table 1: Variables used in the model
@@ -38,7 +38,6 @@ Table 1: Variables used in the model
 | Schooling                      | Number of years of schooling (years)                                           | Continuous variable       |
 
 
-The model includes five continuous and one categorical predictors. All six predictors are continuous and directly related to our question. They reflect government investment in health, education, and social equity, all of which may influence a country’s GDP.  
 Table 2: Continuous variables summary
 
 | Variable                         |   Mean   |   Std   |   Min   |   Q1   | Median |   Q3   |   Max    |
@@ -69,6 +68,7 @@ all_data <- read.csv("life_expectancy.csv")
 ```
 
 ```{r fig.width = 10, fig.length=12, echo=FALSE, message=FALSE, warning=FALSE}
+# the matrix
 scatter_plot <- function(xvar, xlab) {
   ggplot(all_data, aes_string(x = xvar, y = "GDP")) +
     geom_point(color = "black", alpha = 0.6) +
@@ -91,7 +91,7 @@ p5 <- scatter_plot("Schooling", "Schooling")
 # Combine in layout
 (p1 | p2 | p3) / (p4 | p5)
 ```
-GDP increases with an increase in health percentage expenditure in a rather compelling linear manner, although the clustering near the lower ends of the domain is concerning due to outliers in countries that are experiencing geopolitical turmoil. GDP anf polio as well as income composition or resources and schooling demonstrate weaker positive trends, looking more quadratic, most likely with leverage points at the tails. It's clear that there are bad leverage points in GDP and population. In the context of geography and the complexity of individual states, one can suspend their disbelief easily about certain leverage points, but nonetheless, these need to be dealt with to provide a more accurate prediction of GDP with the set predictors at hand. 
+GDP increases as health percentage expenditure does in a rather compelling linear manner, although the clustering near the lower ends of the domain is concerning due to outliers in countries that are experiencing geopolitical turmoil. GDP and polio as well as income composition of resources and schooling demonstrate weaker positive trends, looking more quadratic, most likely with leverage points at the tails. It's clear that there are bad leverage points in GDP and population. In the context of geography and the complexity of individual states, one can suspend their disbelief easily about certain leverage points, but nonetheless, these need to be dealt with to provide a more accurate prediction of GDP with the set predictors at hand. 
 
 Figure 2: Histogram of GDP & numeric predictors  
 \
@@ -168,13 +168,14 @@ combined_plot &
   plot_layout(guides = "collect")
 ```
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Create a common theme with smaller text and better use of space
+# Boilerplate common theme again
 compact_theme <- theme(
   plot.title = element_text(size = 9, face = "bold"),
   axis.title = element_text(size = 8),
   axis.text = element_text(size = 7),
   plot.margin = margin(3, 3, 3, 3, "pt")
 )
+# boxplot
 ggplot(all_data, aes(x = Status, y = GDP)) +
   geom_boxplot(fill = "skyblue") +
   labs(title = "GDP per Capita by Country Status",
@@ -182,9 +183,18 @@ ggplot(all_data, aes(x = Status, y = GDP)) +
        y = "GDP per Capita") + coord_cartesian(ylim = c(0, 1e+05))
 
 ```
-GDP, percentage expenditure, and population are strongly right-skewed, with mostly low values. Schooling and income composition are slightly left-skewed, clustering at the high end. Income composition is also bimodal, although there is potential for a bell-curve-like shape. Polio rates are highly left-skewed. Since country status is a categorical predictor, the boxplot graph is better suited to evaluating the normality assumption. Developed countries have a higher median GDP per capital and wider IQR range, which indicates greater variability than developing countries, which violates a model assumption. Also, developing countries appear highly skewed to the right, with most countries clustered at low GDP per capital values. The long tail of outliers stretching upward indicate a few developing countries with relatively high GDPs. In context, these outlier countries like Malaysia, Mexico, Thailand, Turkey or Chile are developing countries, but are often classified more further by the World Bank as upper-middle-income economies because they clearly act as outliers compared to the rest of the developing world. 
+GDP, percentage expenditure, and population are strongly right-skewed, with mostly low values. Schooling and income composition are slightly left-skewed, clustering at the high end. Income composition is also bimodal, although there is potential for a bell-curve-like shape. Polio rates are highly left-skewed. Since country status is a categorical predictor, the boxplot graph is better suited to evaluating the normality assumption. Developed countries have a higher median GDP per capital and wider IQR range, which indicates greater variability than developing countries, which violates a model assumption. Also, developing countries appear highly skewed to the right, with most countries clustered at low GDP per capital values. The long tail of outliers stretching upward indicate a few developing countries with relatively high GDPs. In context, these outlier countries like Malaysia, Mexico, or Turkey are often classified more deeply as upper-middle-income economies (World Bank) because they clearly act as outliers compared to the rest of the developing world. 
 
 # Primary model results and diagnostics
+Initially, the distribution of GDP was heavily right-skewed due to a small number of countries with disproportionately large economies. Residual plots also showed signs of heteroscedasticity, violating regression assumptions. To address this, we applied a log transformation to the response variable, which preserved the interpretability of a linear model while improving the spread of residuals.
+
+The adjusted R-squared of the transformed model was 0.9258, indicating that 92.6% of the variation in GDP is explained by the model. Among numerical predictors, percentage expenditure on health and schooling were both statistically significant (p < 0.001), suggesting strong positive relationships with GDP. This supports the idea that education and health investment enhance human capital and economic productivity (Radcliffe, Raghupathi). For the categorical predictor Status (Developed vs. Developing), the p-value was approximately 0.0038, indicating that developed countries tend to have significantly higher GDPs after accounting for other variables. In contrast, polio immunization and population size were not statistically significant, implying weaker associations.  
+
+The residual plots assess linearity and constant variance assumptions. Residuals were mostly centered around zero, but a slight V-shape indicates some remaining heteroscedasticity, especially at the lower and higher ends of fitted GDP. This suggests more stable residuals in middle-income countries, while richer and poorer countries show more unpredictable patterns. For example, the U.S., Qatar, and Luxembourg all have high GDPs, but for very different reasons (tech, gas, or tax policy). Similarly, lower-income countries may have inconsistent or less reliable data.  
+
+The Q-Q plot showed that residuals were somewhat normal, but skewed left. Residuals versus individual predictors showed random scatter for income composition and schooling, but some structure for expenditure, population, and polio, suggesting potential nonlinearities.  
+
+Overall, the model shows evidence that educational and economic factors influence GDP, though remaining issues with heteroscedasticity and non-normal residuals should be better resolved, as these violations weaken ordinary least squares (OLS) model accuracy. Employing further transformations like Box-Cox, investigating covariance, colinearity, the removal of bad leverage points and outliers, comparison of different models through F-test and analysis of variance (ANOVA), or even exploring weighted least squares (WLS) are key stratagem to confidently predict the expected GDP in a country. 
 
 # Model seleection
 
