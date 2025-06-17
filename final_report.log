@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.25)  17 JUN 2025 15:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2025.2.25)  17 JUN 2025 15:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -773,7 +773,7 @@ File: final_report_files/figure-latex/unnamed-chunk-20-1.pdf Graphic file (type 
 Package pdftex.def Info: final_report_files/figure-latex/unnamed-chunk-20-1.pdf  used on input line 777.
 (pdftex.def)             Requested size: 722.69823pt x 325.2142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 795--796
+Underfull \hbox (badness 10000) in paragraph at lines 797--798
 
  []
 
@@ -781,7 +781,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 795--796
 
 [13 <./final_report_files/figure-latex/unnamed-chunk-20-1.pdf>]
 
-LaTeX Warning: Command \textendash invalid in math mode on input line 884.
+LaTeX Warning: Command \textendash invalid in math mode on input line 886.
 
 
 
@@ -790,7 +790,7 @@ LaTeX Warning: Command \textendash invalid in math mode on input line 884.
 [15]
 
 [16]
-Underfull \hbox (badness 10000) in paragraph at lines 1104--1107
+Underfull \hbox (badness 10000) in paragraph at lines 1106--1109
 [][]$\T1/lmr/m/n/10 https : / / www . oecd . org / en / data / indicators / nominal -[] gross -[] domestic -[] product -[] gdp . html ? oecdcontrol -[]
  []
 
@@ -813,7 +813,7 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  89i,11n,93p,585b,594s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></Users/erinxu/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on final_report.pdf (18 pages, 3175413 bytes).
+Output written on final_report.pdf (18 pages, 3175520 bytes).
 PDF statistics:
  349 PDF objects out of 1000 (max. 8388607)
  279 compressed objects within 3 object streams

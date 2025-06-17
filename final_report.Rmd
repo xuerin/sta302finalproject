@@ -450,7 +450,7 @@ $H_a$: At least one slope coefficient is non-zero (the model explains some varia
 
 The overall F-statistic for **Model 6** is 209.8 with 6 and 1640 degrees of freedom, and a corresponding p-value of $<2.2e-16$. This indicates that the model is statistically significant overall, meaning we can reject the null hypothesis. There is least one of the predictors contributes meaningfully to explaining variation in Box-Cox transformed GDP. The extremely small p-value provides strong evidence against the null hypothesis that all slope coefficients are zero.
 
-Based on best meeting these criteria, and solving violation assumptions, **Model 6** is our final model for inference and interpretation of GDP by health and socioeconomic predictors. 
+**Based on best meeting these criteria, and solving violation assumptions, Model 6 is our final model for inference and interpretation of GDP by health and socioeconomic predictors.**
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -650,7 +650,7 @@ clean_data6 <- all_data[-remove_invalid, ]
 
 # clean model
 
-clean_model6 <- lm(bc_GDP ~ Status 
+clean_model6<-lm(bc_GDP ~ Status 
              +I(Total.expenditure^2)
              + Polio
              + I(log(Population))
@@ -672,6 +672,7 @@ With Box-Cox transformation parameter $\lambda = 0.101$, the estimated model is:
 &= \beta_0 + \beta_1 X_{\text{Status}} + \beta_2 X_{\text{TotalExpenditure}}^2 + \beta_3 X_{\text{Polio}} \\
 &\quad + \beta_4 \log(X_{\text{Population}}) + \beta_5 X_{\text{IncomeCompositionofResources}} + \beta_6 X_{\text{Schooling}}^2 + \varepsilon
 \end{align*}
+
 \
 
 Table 8: Final Model Summary Table at 0.05 Confidence Level
