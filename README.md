@@ -4,7 +4,7 @@
 Dataset (csv):
 [life_expectancy.csv](life_expectancy.csv), [original link](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who)
 
-Final draft (pdf):
+Final model (pdf):
 [final_report.pdf](final_report.pdf)
 
 Final code (R Markdown):
@@ -13,8 +13,8 @@ Final code (R Markdown):
 Bibliography (pdf, bib file):
 Last page in [final_report.pdf](final_report.pdf), [preliminary_model.pdf](preliminary_model.pdf), [references.bib](references.bib)
 
-First draft (pdf):
+Preliminary model (pdf):
 [preliminary_model.pdf](preliminary_model.pdf)
 
-Code (R Markdown): 
+Preliminary Code (R Markdown): 
 [preliminary_model.Rmd](preliminary_model.Rmd)
