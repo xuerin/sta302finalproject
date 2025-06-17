@@ -698,31 +698,64 @@ One common metric is the **coefficient of determination**, $R^2$, which measures
 
 To address this, we use **Adjusted $R^2$**, which adjusts for the number of predictors in the model and only increases when a new predictor improves the model more than expected by chance. This makes Adjusted $R^2$ more appropriate for comparing models, especially when using transformed responses, such as in our final model, which uses a Box-Cox transformation and many predictor transformations. While 
 
-In our final model (clean_model6), $R^2 = 0.4343$ which means that about 43.4% (nearly half) of the variance in the transformed GDP can be explained by the model. The Adjusted $R^2 = 0.4322$ is a decently strong value, because modeling complex human and economic behavior with only 6 predictors is simple and simplistic when much of GDP variation may be driven by factors not observed in the dataset. For example, superfluous political institutions, international trade policies, or cultural factors. 
+In our final model **Model 6** (clean_model6 in code), $R^2 = 0.4343$ which means that about 43.4% (nearly half) of the variance in the transformed GDP can be explained by the model. The Adjusted $R^2 = 0.4322$ is a decently strong value, because modeling complex human and economic behavior with only 6 predictors is simple and simplistic when much of GDP variation may be driven by factors not observed in the dataset. For example, superfluous political institutions, international trade policies, or cultural factors. 
 
 While not exceptionally high, these values reflect a meaningful relationship given the diversity of countries, economies, and the inherent noise in cross-country economic data.
 
 In addition to these, we used **likelihood-based criteria**, the **AIC (Akaike Information Criterion)** and **BIC (Bayesian Information Criterion)**. These penalize model complexity and are especially useful for comparing multiple competing models. Both AIC and BIC aim to identify the most parsimonious model that balances fit and complexity, where lower AIC/BIC values are preferred. Since our goal was not just prediction but interpretability, selecting a model with good AIC/BIC and trading off $R^2$ and Adjusted $R^2$ helps reduce overfitting of data. Our final model had the lowest values across all candidate models with AIC = 8074.323 and BIC = 8117.587. 
 
-Together, Adjusted  $R^2$, AIC, and BIC all support the choice of **clean_model6** as the best-performing model. 
+Together, Adjusted  $R^2$, AIC, and BIC all support the choice of **Model 6** (clean_model6 in code) as the best-performing model. 
 
 # Discussion and conclusion
-Our project aims to investigate the impact of health expenditure and socioeconomic factors on GDP per capita in countries. After data cleaning, exploratory analysis, and model selection, our final model is **clean_model6**, which uses the Box-Cox transformed GDP as the response variable, and quadratic and log transformations in some of the predictors. The six predictors are Status, Total Expenditure$^2$, Polio, $log$(Population), Income Composition, and Schooling$^2$. 
+Our project aims to investigate the impact of health expenditure and socioeconomic factors on GDP per capita in countries. After data cleaning, exploratory analysis, and model selection, our final model is **Model 6** (clean_model6 in code), which uses the Box-Cox transformed GDP as the response variable, and quadratic and log transformations in some of the predictors. The six predictors are Status, Total Expenditure$^2$, Polio, $log$(Population), Income Composition, and Schooling$^2$. 
 
 From MLR diagnostic results, we have reason to believe that health and socioeconomic variables do contribute meaningfully to explaining international differences in GDP, though some variation remains beyond what can be captured by the selected predictors.
 
-Final Model (Box-Cox Transformed GDP, $\lambda = 0.101$):
+**Final Model (Box-Cox Transformed GDP, $\lambda = 0.101$):**
 $$
-\hat{Y}^{(0.101)} = 6.3298 - 1.2452 \cdot \text{Status}_{\text{Developing}} 
-+ 0.0036 \cdot \text{TotalExpenditure}^2 
-- 0.0033 \cdot \text{Polio} 
-- 0.0022 \cdot \log(\text{Population}) \\
-+ 4.1549 \cdot \text{IncomeComposition} 
-+ 0.0222 \cdot \text{Schooling}^2
+\begin{aligned}
+\hat{Y}^{(0.101)} =\ & 6.3298 - 1.2452 \cdot \text{Status}_{\text{Developing}} \\
+& +\ 0.0036 \cdot \text{TotalExpenditure}^2 
+- 0.0033 \cdot \text{Polio} \\
+& -\ 0.0022 \cdot \log(\text{Population}) 
++ 4.1549 \cdot \text{IncomeComposition} \\
+& +\ 0.0222 \cdot \text{Schooling}^2
+\end{aligned}
 $$
 
+The analysis demonstrates that among all the variables considered, education and income composition are the most influential and statistically significant determinants of GDP. A country's economic performance is mainly affected by the level of education and the fairness of income distribution. In contrast, factors such as health expenditure, population size, and immunization rates have strong limited impact on economic outcomes and are generally not statistically significant. This conclusion is supported by our final regression model, which explains about 93% of the variation in GDP (adjusted R-squared $\approx 0.93$). Specifically, the coefficient of schooling$^2$ is positive (0.0222) and highly significant $(p < 2e-16)$, indicating that investment in education has a strong nonlinear positive impact on economic performance. Similarly, income composition has a coefficient of 4.1549 $(p = 3.07e-12 )$, highlighting the importance of inclusive growth and equitable resource allocation. Other factors, including health expenditure, population, and immunization coverage, do not show significant effects in the presence of the main predictors. 
+
+### Limitations:
+Although the final model demonstrates a high adjusted R-squared value and strong predictive power, several limitations should be acknowledged. Firstly, while our model identifies statistical correlations between the predictors and GDP per capita, the cross-sectional nature of our dataset prevents us from determining whether these factors are direct causes of economic growth. Because cross-sectional data only capture the circumstances of each country at a single point in time, we can assess associations but cannot establish causal relationships.  
+
+Secondly, the reliability of our estimates may be affected by measurement errors and omitted variable bias. Some key predictors, such as health expenditure and immunization coverage, may be subject to measurement errors or inconsistencies in reporting standards across countries, resulting in potential data quality issues. Furthermore, although we included major socioeconomic and health-related variables, our model does not account for all possible factors that may influence GDP, such as political stability, technological progress, or international trade. Omitting these important variables could bias the results and lead to inaccurate estimates of the effects of the included predictors.  
+
+Lastly, our findings are based on the specific countries and time period covered by our dataset, which may limit the generalizability of our results. The results of this study may not necessarily apply to countries with very different social, economic, or political backgrounds, or other periods marked by major global changes.  
+
+### Recommendations:
+Our analysis suggests that improving education and making income distribution fairer are two of the most effective ways for countries to boost their economic growth. We recommend that governments continue to invest in education, making sure that access and quality are improved for everyone, not just a small group. Creating policies that support more equal opportunities and reduce large gaps between the rich and the poor can also have a positive impact on the overall economy.  
+
+While spending on health and immunization did not show a strong direct effect on GDP in our results, these areas are still important for the well-being of a country’s population and may influence growth in ways our model didn’t capture. For this reason, we suggest not overlooking investments in public health. Lastly, we encourage policymakers to look at the bigger picture by considering a range of social and economic factors and to support better, more reliable data collection for future studies.  
+
+### Improvements:
+There are several ways our analysis could be improved in future studies. First, including more variables, for example, political stability, infrastructure, technological progress, or even cultural differences, could demonstrate a fuller picture of what drives economic growth. Another way to improve would be to try out different types of statistical models, not just linear regression, to see if they capture relationships between variables better. Finally, making sure data from different countries is as consistent and accurate as possible will help strengthen the findings.
+	
+In conclusion, our analysis demonstrates that education and income composition are the two most important factors associated with a country's GDP per capita. Countries with higher education levels and more equitable income distribution tend to have better economic performance. In contrast, when education and income are taken into account, factors such as health spending, population size, and immunization rates do not have a significant direct impact on GDP. While our results highlight the key role of human capital and equitable growth in economic development, they are subject to some limitations in the data and analysis. Future research with more comprehensive data and additional variables could help provide a deeper understanding of the complex factors that influence economic growth.  
+
+\
+\
+\
+\
 
 # Author contributions
+Sharon Lam: Introduction, Final Model Inference and Results
+
+Shencen Cai: Data Description, Discussion and Conclusion
+
+Erin Xu: Introduction, Preliminary Results, R Code, Model Selection, Bibliography
+
+Dora Dong: Preliminary Results, R Code, Model Selection
+
 
 # References 
 
