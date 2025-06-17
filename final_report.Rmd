@@ -10,6 +10,42 @@ bibliography: references.bib
 nocite: '@*'
 link-citations: true
 ---
+# Introduction
+Gross domestic product (GDP) is a widely used measure of a country’s economic output, representing the total market value of goods and services produced within its borders over a specified period. It serves as a key indicator of national economic performance and enables comparison across countries and time periods. By standard economic theory, GDP is influenced by components such as consumer spending, government expenditures, investment in capital goods, and net exports. In addition, factors like human capital, infrastructure, technological innovation, and political stability also play vital roles in sustaining economic growth.
+
+This project applies multiple linear regression (MLR) to investigate the extent to which health-related and socioeconomic factors are associated with GDP, with the research question being: *To what extent do government spending on health and socioeconomic resources affect a country’s GDP?* Specifically, country status (developed vs. developing), percentage expenditure on health, polio immunization coverage, income composition of resources, years of schooling, and population are the combination of continuous and categorical predictors used to explain the extent in which they affect GDP, the response, in countries around the world. Spending money on health, as indicated by the percentage expenditure on health and polio immunization coverage, can improve productivity, leading to greater economic growth. Similarly, the income composition of resources and country status are socioeconomic factors that can also explain GDP trends. Other predictors, such as the number of years of schooling and population, are also important variables to consider for a country’s overall economic growth.
+
+These variables are examined for their ability to explain cross-country variation in GDP from a traditional economic standpoint. Health spending, represented by expenditure and immunization coverage, has been shown to enhance productivity, while income composition and national development status reflect broader socioeconomic conditions. Education and population are also recognized as structural drivers of economic growth because educated workers builds human capital and education encourages research and innovation to build better products, processes and overall economic advancement. 
+
+As economic theory suggests a positive relationship between GDP and improved development indicators, the application of MLR is appropriate for this context, and estimating a linear model facilitates the quantification of each predictor’s contribution to GDP while accounting for the influence of other variables. The focus of the analysis is on interpretability, aiming to understand how each factor relates to economic output and to support evidence-based approaches to development and policy planning.  
+
+# Data Description
+The dataset used in this project is titled *Life Expectancy* (WHO), sourced from *Kaggle* (Kumar, 2018). Its primary usage is for health data analysis. Data collectors combined publicly available data from the *World Health Organization* (WHO) and the *United Nations* (UN), which were gathered through national health departments, structured questionnaires, and annual statistical submissions by participating countries (World Health Organization, n.d.; United Nations, n.d.).  
+
+While the dataset was initially intended to examine factors affecting life expectancy, this project selects 7 of the original 22 variables. The sample comprises over 1,600 complete observations, focusing on education, demographic, and socioeconomic indicators relevant to economic growth. These variables align with economic theory, which emphasizes the importance of education, health, and human capital in supporting sustained increases in productivity and GDP.  
+
+Multiple linear regression is an appropriate method for analysis, as the data set consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
+
+GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
+
+GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP. 
+
+
+# Data description
+
+# Primary model results and diagnostics
+
+# Model seleection
+
+# Final model inference and results 
+
+# Discussion and conclusion 
+
+# Author contributions
+
+# References 
+
+
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
               "kableExtra", "leaps", "ggplot2", "patchwork", "car", "MASS")
