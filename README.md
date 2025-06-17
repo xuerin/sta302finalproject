@@ -4,21 +4,19 @@
 Dataset (csv):
 [life_expectancy.csv](life_expectancy.csv), [original link](https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who)
 
-Code (R Markdown): 
-[preliminary_model.Rmd](preliminary_model.Rmd)
-
 Final draft (pdf):
 [final_report.pdf](final_report.pdf)
+
+Final code (R Markdown):
+[final_report.Rmd](final_report.Rmd)
+
+Bibliography (pdf, bib file):
+Last page in [final_report.pdf](final_report.pdf), [preliminary_model.pdf](preliminary_model.pdf), [references.bib](references.bib)
 
 First draft (pdf):
 [preliminary_model.pdf](preliminary_model.pdf)
 
+Code (R Markdown): 
+[preliminary_model.Rmd](preliminary_model.Rmd)
 
-Bibliography (pdf, bib file):
-Last last page in [preliminary_model.pdf](preliminary_model.pdf), [references.bib](references.bib)
 
-
-## Todo for final submission
-1. Create boxplots of residual and each category for categorical variable. A scatterplot is only good for continuous variables. 
-2. ANOVA, CI, t test
-3. discussion 
