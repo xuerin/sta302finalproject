@@ -428,7 +428,20 @@ Table 6: ANOVA Table
 | Schooling$^2$           | 1  | 75.9    | 75.9    | 13.0305  | 0.000317      |
 | Residuals            | 1416 | 8248.6    | 5.8  | —        | —             |
 
-In addition to examining diagnostic plots, overall fit and complexity of the final two models were evaluated with certain metrics. **Model 6** has a larger Adjusted $R^2$ value and smaller AIC and BIC values. To assess the influence of individual observations, Cook’s distance, difference in fits (DFFITS) and leverage values were examined. Removing outliers improved the normality and homoscedasticity of residuals $(126, 2121, 92, 1233)$.  However removing  high leverage or high influence points led to curvature in the residuals vs fitted plot and deviations from normality in the Q-Q plot. This suggests that these points may contain genuine structure in the data necessary for the model to adequately capture relationships. Therefore, we decided to only remove clear outliers based on standardized residuals, while retaining leverage and influential points.
+
+Table 7: Comparison of each model
+
+| Model     | $R^2$    |  Adjusted $R^2$  | AIC           | BIC      |
+|-----------|----------|------------------|--------------|--------------|
+| Model 1   | 0.9262   | 0.9259           | 31226.955    | 31270.218    |
+| Model 2   | 0.3124   | 0.3099           | 34906.658    | 34949.922    |
+| Model 3   | 0.4209   | 0.4188           | 8085.575     | 8128.838     |
+| Model 4   | 0.3483   | 0.3459           | 34818.269    | 34861.533    |
+| Model 5   | 0.4209   | 0.4188           | 8085.524     | 8128.788     |
+| Model 6   | 0.4249   | 0.4288           | 8074.323     | 8117.587     |
+
+
+In addition to examining diagnostic plots, overall fit and complexity of the final two models were evaluated with certain metrics. **Model 6** has a larger Adjusted $R^2$ value and smaller AIC and BIC values. To further identify which points were problematic, we used several standard diagnostic criteria: outliers were identified as observations with standardized residuals exceeding $\pm 4$, high leverage points as those with hat values greater than $\frac{2(p+1)}{n}$, and influential points based on Cook’s distance exceeding $\frac{4}{n}$ or DFFITS values greater than $2\sqrt{\frac{p+1}{n}}$. Based on this, we removed observations 126, 2121, 92, and 1233 as outliers, which improved the normality and homoscedasticity of the residuals, and the Q-Q plot more closely followed the 45-degree line. However, we chose not to remove high leverage or influential points unless they were also clear outliers. Removing these points led to curvature in the residuals vs fitted plot and deviations from normality in the Q-Q plot. This suggests that these points may contain genuine structure in the data necessary for the model to adequately capture relationships. 
 
 To test the overall significance of the model, we conducted an F-test with the following hypotheses:  
 $H_0$: All slope coefficients are equal to zero (the model has no explanatory power), $\beta_0 = \beta_1 = ... = \beta_k = 0, \forall k \in \mathbb{Z}^+$. 
@@ -651,7 +664,7 @@ plot(clean_model6)
 ```
 
 # Final model inference and results 
-The final regression model consists of six key predictors, all of which were selected and transformed in a way which best explains a country’s GDP. Quadratic and logarithmic are examples of the transformations applied to the predictors for the final model. The response is also transformed using the Box-Cox transformation method, due to the violation of the normality assumption. This final model helps accurately address the extent to which government spending on health and socioeconomic resources affects a country’s GDP.  
+The final regression model consists of six predictors which were selected and transformed in a way to accurately address the extent to which government spending on health and socioeconomic resources affects a country’s GDP. Quadratic and logarithmic are examples of the transformations applied to the predictors for the final model. The response is also transformed using the Box-Cox transformation method, due to preliminary violations of the normality assumptions. 
 
 With Box-Cox transformation parameter $\lambda = 0.101$, the estimated model is:
 \begin{align*}
@@ -659,12 +672,12 @@ With Box-Cox transformation parameter $\lambda = 0.101$, the estimated model is:
 &= \beta_0 + \beta_1 X_{\text{Status}} + \beta_2 X_{\text{TotalExpenditure}}^2 + \beta_3 X_{\text{Polio}} \\
 &\quad + \beta_4 \log(X_{\text{Population}}) + \beta_5 X_{\text{IncomeCompositionofResources}} + \beta_6 X_{\text{Schooling}}^2 + \varepsilon
 \end{align*}
+\
+
+Table 8: Final Model Summary Table at 0.05 Confidence Level
 
 
-Table 7: Final Model Summary Table at 0.05 Confidence Level
-
-
-| Predictor           | Estimate | Std. Error | t value | Pr(>|t|)     | 2.5%    | 97.5%   |
+| Predictor           | Estimate | Std. Error | t value | $Pr(>|t|)$     | 2.5%    | 97.5%   |
 |---------------------|----------|------------|---------|--------------|---------|---------|
 | (Intercept)         | 6.3298   | 0.5977     | 10.591  | < 2e-16  | 5.1575  | 7.5021  |
 | Status              | -1.2452  | 0.2340     | -5.321  | 1.18e-7  | -1.7043 | -0.7862 |
@@ -675,22 +688,22 @@ Table 7: Final Model Summary Table at 0.05 Confidence Level
 | Schooling           | 0.0222   | 0.0017     | 12.733  | < 2e-16  | 0.0188  | 0.0257  |
 
 ### Intercept:
-When all predictors are equal to 0, the estimated average value of the Box-Cox-transformed GDP (BC-GDP) is 6.3298. In other words, when all other factors are zero, such as status and total expenditure, the on the transformed scale, the response is only comprised of the intercept. Realistically, the intercept is not very useful by itself, as it does not make much sense for some of the predictors to be zero, and is not strictly in the range of GDP realizations. Select confidence intervals are interpreted in examples below. 
+With all predictors at 0, the model’s Box-Cox–transformed GDP (BC-GDP) is 6.33. Because predictors such as schooling or health spending cannot literally be zero, the intercept is a baseline constant rather than a quantity of direct policy interest.
 
 ### Status:
-Status is a categorical predictor with two levels, **developing** and **developed**, where the developing category is set as the dummy variable. Thus, when the country’s status is developing, -1.2452 is the intercept of the developing category minus the developed category. This indicates a negative relationship between a developing status and BC-GDP. When the status is developing, the expected response decreases by 1.2452 on the transformed scale. This aligns with what is expected as a developing country generally has less spending on health and socioeconomic resources, resulting in less human capital, and thus a lower BC-GDP.
+Status is a categorical variable with **developed** as the reference. The coefficient –1.2452 indicates that developing countries have, on average, a 1.2452 lower BC-GDP than developed ones, holding other factors constant. This reflects the expected trend: developing countries often have lower investment in health and socioeconomic resources, resulting in reduced human capital and economic output.
 
 ### Total Expenditure (squared):
-The coefficient for total expenditure squared is 0.0036. Since this predictor is squared and there is no corresponding linear term, the relationship between total expenditure and Box-Cox-transformed GDP (BC-GDP) is monotonically increasing over the range of observed values. This means that as total expenditure increases, expected BC-GDP also increases, and does so at an accelerating rate. In other words, higher levels of health spending are associated with disproportionately larger increases in GDP. The positive coefficient reflects that greater investment in healthcare may yield increasing returns to economic output. Countries that allocate more of their national budget to healthcare (as a share of GDP) tend to experience disproportionately greater economic benefits, likely due to improvements in population health, worker productivity, and reduced disease burden. These effects may compound over time, contributing to long-term growth and economic resilience. However, it is important to interpret this cautiously. While the squared term shows a strong association in the model, it does not capture causal mechanisms. The direction of the relationship may also reflect reverse causality, because countries with higher GDP may have more resources to spend on health. Nonetheless, the presence of a nonlinear positive association supports the idea that health is a productive form of investment, particularly for countries already investing at moderate-to-high levels, and is a good use of this dataset. 
+The coefficient for total expenditure squared is 0.0036. Since there is no linear term, the relationship between health spending and BC-GDP is monotonically increasing and nonlinear—as total expenditure rises, BC-GDP increases at an accelerating rate. This suggests that higher health investment is linked to disproportionately larger economic benefits, likely through improved public health and productivity. However, the relationship is associative, not causal. It’s also possible that countries with higher GDP can afford greater health spending. Still, the positive nonlinear trend supports the view that healthcare is a valuable investment, especially at moderate-to-high spending levels. 
 
 ### Polio:
-The variable Polio in the dataset refers to polio immunization coverage among 1-year-olds. The estimated coefficient is –0.0033, suggesting a very slight negative association between immunization coverage and BC-GDP. However, this relationship is not statistically significant (p = 0.302), so we cannot confidently conclude that polio immunization coverage meaningfully affects GDP in this model after adjusting for other variables. Polio refers to immunization coverage, a very specific health outcome, so total expenditure could partially explain polio immunization coverage, but not fully. 
+Polio measures immunization coverage among 1-year-olds. The coefficient (–0.0033) suggests a slight negative relationship with BC-GDP, but it is not statistically significant (p = 0.302). This implies that, after adjusting for other variables, polio coverage does not have a meaningful impact on GDP. While total expenditure may influence immunization rates, it does not fully explain them.
 
 ### Population (log):
-The coefficient for the natural log of population size is –0.0022. However, this effect is extremely small and statistically insignificant because p = 0.930. After accounting for other variables such as education, income composition, and health investment, population size does not significantly explain additional variation in GDP in this model. The negative sign may reflect challenges in large populations, but the data do not support a meaningful relationship here. The 95% confidence interval for log(Population) is [–0.0513, 0.0468], which includes 0. This suggests that there is no statistically significant relationship between population size and GDP in the final model at the 5% significance level.
+The coefficient for log(Population) is –0.0022 and not statistically significant (p = 0.930). This suggests population size does not explain additional variation in GDP after accounting for other factors. The 95% confidence interval $[–0.0513, 0.0468]$ includes 0, confirming no significant relationship at the 5% level.
 
 ### Income Composition of Resources:
-For every 1-unit increase in the income composition of resources index (on a 0–1 scale), the estimated average change in BC-GDP is 4.1549, holding all other predictors constant. Since the index reflects broader access to income and opportunity — not just raw GDP or natural resource wealth — this result suggests that countries with higher levels of income-based human development tend to have significantly higher GDP per capita. This aligns with economic theory: greater income equity and opportunity enable broader participation in economic activity, driving growth. The 95% confidence interval for the coefficient of Income Composition is [2.9953, 5.3146]. This means we are 95% confident that, after controlling for other factors, a one-unit increase in income composition of resources is associated with an increase in Box-Cox transformed GDP between approximately 2.99 and 5.31 units. Since the interval does not contain 0, the effect is statistically significant.
+For every 1-unit increase in the income composition index (ranging from 0 to 1), BC-GDP increases by an estimated 4.1549 units, holding other factors constant. This suggests that countries with more equitable income distribution and greater access to economic opportunity tend to have significantly higher GDPs. The 95% confidence interval for the coefficient of Income Composition is $[2.9953, 5.3146]$. This means we are 95% confident that, after controlling for other factors, a one-unit increase in income composition of resources is associated with an increase in Box-Cox transformed GDP between approximately 2.99 and 5.31 units. Since the interval does not contain 0, the effect is statistically significant.
 
 ### Schooling (squared):
 The coefficient for schooling squared is 0.0222. Since only the squared term is included (with no linear component), the model implies a monotonic and accelerating positive relationship between years of schooling and BC-GDP. As the average number of school years increases, BC-GDP increases and does so more steeply at higher levels of education. This supports one of the strongest theories in economics that education builds human capital, and higher educational attainment translates into stronger economic output. 
