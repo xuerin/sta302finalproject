@@ -57,11 +57,23 @@ Table 3: Status (categorical variable) frequency
 | Developed  | 512       |
 | **Total**  | 2938      |
 
-
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
 Figure 1: Scatter plots of GDP against numeric predictors  
 ```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
 packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
-              "kableExtra", "leaps", "ggplot2", "patchwork")
+              "kableExtra", "leaps", "ggplot2", "patchwork", "car", "MASS")
 lapply(packages, require, character.only = T)
 set.seed(420)
 all_data <- read.csv("life_expectancy.csv")
@@ -82,7 +94,7 @@ scatter_plot <- function(xvar, xlab) {
 }
 
 # Create plots
-p1 <- scatter_plot("percentage.expenditure", "Health ercentage expenditure")
+p1 <- scatter_plot("percentage.expenditure", "Health Percentage expenditure")
 p2 <- scatter_plot("Polio", "Polio")
 p3 <- scatter_plot("Population", "Population")
 p4 <- scatter_plot("Income.composition.of.resources", "Income composition of resources")
@@ -93,9 +105,11 @@ p5 <- scatter_plot("Schooling", "Schooling")
 ```
 GDP increases as health percentage expenditure does in a rather compelling linear manner, although the clustering near the lower ends of the domain is concerning due to outliers in countries that are experiencing geopolitical turmoil. GDP and polio as well as income composition of resources and schooling demonstrate weaker positive trends, looking more quadratic, most likely with leverage points at the tails. It's clear that there are bad leverage points in GDP and population. In the context of geography and the complexity of individual states, one can suspend their disbelief easily about certain leverage points, but nonetheless, these need to be dealt with to provide a more accurate prediction of GDP with the set predictors at hand. 
 
+
 Figure 2: Histogram of GDP & numeric predictors  
+
 \
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r fig.width = 10, fig.length=12, echo=FALSE, message=FALSE, warning=FALSE}
 # Create a common theme with smaller text and better use of space
 compact_theme <- theme(
   plot.title = element_text(size = 9, face = "bold"),
@@ -186,6 +200,84 @@ ggplot(all_data, aes(x = Status, y = GDP)) +
 GDP, percentage expenditure, and population are strongly right-skewed, with mostly low values. Schooling and income composition are slightly left-skewed, clustering at the high end. Income composition is also bimodal, although there is potential for a bell-curve-like shape. Polio rates are highly left-skewed. Since country status is a categorical predictor, the boxplot graph is better suited to evaluating the normality assumption. Developed countries have a higher median GDP per capital and wider IQR range, which indicates greater variability than developing countries, which violates a model assumption. Also, developing countries appear highly skewed to the right, with most countries clustered at low GDP per capital values. The long tail of outliers stretching upward indicate a few developing countries with relatively high GDPs. In context, these outlier countries like Malaysia, Mexico, or Turkey are often classified more deeply as upper-middle-income economies (World Bank) because they clearly act as outliers compared to the rest of the developing world. 
 
 # Primary model results and diagnostics
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+all_data <- read.csv("life_expectancy.csv", na.strings = c("", "NA"))
+anyNA(all_data)
+sum(is.na(all_data))
+colSums(is.na(all_data))
+```
+```{r eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+all_data <- read.csv("life_expectancy.csv")
+all_data <- na.omit(all_data)
+
+all_data$Status <- as.factor(all_data$Status)
+
+
+# Clean model
+full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
+                   infant.deaths + Alcohol + percentage.expenditure + 
+                   Hepatitis.B + Measles + BMI + under.five.deaths + Polio +
+                   Total.expenditure + Diphtheria + HIV.AIDS + Population +
+                   thinness..1.19.years + thinness.5.9.years +
+                   Income.composition.of.resources + Schooling,
+                 data = all_data)
+summary(full_model)
+
+step_model <- step(full_model, direction = "both")
+summary(step_model)
+```
+
+
+```{r, fig.width=10, fig.height=7, eval=FALSE, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+best_model <- regsubsets(Life.expectancy ~ GDP + Status + Adult.Mortality + 
+                           infant.deaths + Alcohol +
+                           percentage.expenditure + Hepatitis.B + Measles + 
+                           BMI + under.five.deaths + Polio +
+                           Total.expenditure + Diphtheria + HIV.AIDS + 
+                           Population + thinness..1.19.years + 
+                           thinness.5.9.years + Income.composition.of.resources 
+                          + Schooling, data = all_data, nvmax = 10)
+
+# Summary and plot
+best_summary <- summary(best_model)
+plot(best_model, scale = "adjr2")
+```
+We propose the following multiple linear regression model:
+$$
+\begin{aligned}
+GDP &= \mathbb{E}[\log(GDP)] + e \\
+    &= b_0 + b_1 \cdot \text{PercentageExpenditure} + b_2 \cdot \text{Polio} + b_3 \cdot \text{Population} \\
+    &\quad + b_4 \cdot \text{IncomeCompositionOfResources} + b_5 \cdot \text{Schooling} + b_6 \cdot \text{Status}
+\end{aligned}
+$$
+
+Get the response and predictors: 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+all_data <- read.csv("life_expectancy.csv")
+all_data <- na.omit(all_data)
+all_data$log_GDP <- log(all_data$GDP)
+
+response <- all_data$log_GDP
+x0 <- all_data$percentage.expenditure
+x1 <- all_data$Polio
+x2 <- all_data$Population
+x3 <- all_data$Income.composition.of.resources
+x4 <- all_data$Schooling
+
+all_data$Status <- as.factor(all_data$Status)
+
+model <- lm(response ~ Status + x0 + x1 + x2 + x3 + x4, data = all_data)
+summary(model)
+```
+
+
+We estimate the deterministic model as: 
+$$
+\begin{aligned}
+\hat{GDP} = \exp(&\hat{b_0} + \hat{b_1} \cdot \text{PercentageExpenditure} + \hat{b_2} \cdot \text{Polio} + \hat{b_3} \cdot \text{Population} \\
+                &+ \hat{b_4} \cdot \text{IncomeCompositionOfResources} + \hat{b_5} \cdot \text{Schooling} + \hat{b_6} \cdot \text{Status})
+\end{aligned}
+$$
 Initially, the distribution of GDP was heavily right-skewed due to a small number of countries with disproportionately large economies. Residual plots also showed signs of heteroscedasticity, violating regression assumptions. To address this, we applied a log transformation to the response variable, which preserved the interpretability of a linear model while improving the spread of residuals.
 
 The adjusted R-squared of the transformed model was 0.9258, indicating that 92.6% of the variation in GDP is explained by the model. Among numerical predictors, percentage expenditure on health and schooling were both statistically significant (p < 0.001), suggesting strong positive relationships with GDP. This supports the idea that education and health investment enhance human capital and economic productivity (Radcliffe, Raghupathi). For the categorical predictor Status (Developed vs. Developing), the p-value was approximately 0.0038, indicating that developed countries tend to have significantly higher GDPs after accounting for other variables. In contrast, polio immunization and population size were not statistically significant, implying weaker associations.  
@@ -196,26 +288,163 @@ The Q-Q plot showed that residuals were somewhat normal, but skewed left. Residu
 
 Overall, the model shows evidence that educational and economic factors influence GDP, though remaining issues with heteroscedasticity and non-normal residuals should be better resolved, as these violations weaken ordinary least squares (OLS) model accuracy. Employing further transformations like Box-Cox, investigating covariance, colinearity, the removal of bad leverage points and outliers, comparison of different models through F-test and analysis of variance (ANOVA), or even exploring weighted least squares (WLS) are key stratagem to confidently predict the expected GDP in a country. 
 
-# Model seleection
+Figure 3: Linearity and homoscedasticity graphs  
+\
+```{r, fig.width=13, fig.height=7, echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow = c(2, 2))
+plot(model)
+```
+\
 
-# Final model inference and results 
+Figure 4: Residual vs each predictor  
+\
+```{r, fig.width=12, fig.height=8, echo=FALSE, message=FALSE, warning=FALSE}
+all_data$residuals <- resid(model)
+all_data$fitted <- fitted(model)
 
-# Discussion and conclusion `
+p1 <- ggplot(all_data, aes(x = `percentage.expenditure`, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Percentage Expenditure")
 
-# Author contributions
+p2 <- ggplot(all_data, aes(x = Polio, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Polio")
 
-# References 
+p3 <- ggplot(all_data, aes(x = Population, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Population")
 
+p4 <- ggplot(all_data, aes(x = `Income.composition.of.resources`, 
+                           y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Income Composition")
 
-```{r message=FALSE, echo=FALSE, warning=FALSE, include=FALSE}
-packages <- c("tidyverse", "latex2exp", "gridExtra", "rvest", 
-              "kableExtra", "leaps", "ggplot2", "patchwork", "car", "MASS")
-lapply(packages, require, character.only = T)
-set.seed(320)
-all_data <- read.csv("life_expectancy.csv")
+p5 <- ggplot(all_data, aes(x = Schooling, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  labs(title = "Residuals vs Schooling")
+
+p6 <- ggplot(all_data, aes(x = as.factor(Status), y = residuals)) +
+  geom_jitter(width = 0.2, alpha = 0.6, color = "steelblue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  scale_x_discrete(labels = c("Developing", "Developed")) +
+  labs(title = "Residuals vs Status",
+       x = "Status",
+       y = "Residuals")
+
+(p1 | p2 | p3) / (p4 | p5 | p6)
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+\
+Figure 5: Normality graphs  
+
+
+```{r, fig.width=13, fig.height=12, echo=FALSE, message=FALSE, warning=FALSE}
+# Store residuals only once (already done earlier)
+all_data$residuals <- resid(model)
+all_data$std_residuals <- rstandard(model)
+
+# Q-Q Plot
+qq_plot <- ggplot(all_data, aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line(color = "red", linetype = "dashed") +
+  labs(title = "Q-Q Plot of Residuals") +
+  theme_minimal() +  # Optional: adds a cleaner theme that may help with rendering
+  theme(aspect.ratio = 1)  # Makes the plot square, which often helps QQ plots display correctly
+
+# Standardized Q-Q Plot 
+std_qq_plot <- ggplot(all_data, aes(sample = std_residuals)) +
+  stat_qq() +
+  stat_qq_line(color = "red", linetype = "dashed") +
+  labs(title = "Q-Q Plot of Standardized Residuals") +
+  theme_minimal() +
+  theme(aspect.ratio = 1)
+
+# Histogram
+hist_plot <- ggplot(all_data, aes(x = residuals)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Histogram of Residuals", x = "Residuals", y = "Count")
+
+std_hist_plot <- ggplot(all_data, aes(x = std_residuals)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white", alpha = 0.7) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Histogram of Standardized Residuals", 
+       x = "Standardized Residuals", 
+       y = "Count")
+
+
+(qq_plot | std_qq_plot) / (hist_plot / std_hist_plot)
+```
+
+
+# Model selection
+From the conclusion in preliminary model diagnostics, the model violated linear regression assumptions and would benefit from modifications. 
+
+We first fitted a full model using all available predictors from the dataset without transformation. We then performed best subset selection and stepwise selection. Stepwise selection was done using $step()$ based on Akaike Information Criterion (AIC) and Bayesian Information Critertion (BIC) which filtered the complexity and goodness of fit of the model. Best subset selection was done using $regsubsets()$ from the **leaps** package, which tries all combinations of up to 10 predictors and evaluates them based on adjusted $R^2$. This is **Model 1**. The main issue here was the predictor choice that had been determined by the criterion: Both total expenditure on health and percentage expenditure on health were included in the model, however this is not meaningful as these predictors are just different perspectives of health and GDP spending. Therefore, population replaced the percentage expenditure since population had previously a strong indication on its influence of GDP, and this became **Model 2**.
+
+Then, since this model violated normality of residuals and heteroscedasticity, **Model 3** is the variable transformation of **Model 2**, where Box-Cox was applied to the response, with the result of maximized log-likelihood power parameter $\lambda = 0.101$. This significantly improved the normality and variance stability of the residuals, however, a curvature on the residual and fitted values plot was still observed. 
+
+In order to address the remaining violation, **Model 4** applies transformations on the predictors. Polio and population scatterplots from the introduction exploratory data analysis indicated a potential nonlinear relationship with GDP, therefore, a quadratic  transformation was applied to these two predictors, although improvement on normality violations were not representative in diagnostic graphs.
+
+Therefore, **Model 5** and **Model 6** are the combination of both response and predictor transformations. For these two final candidate models, multicollinearity in the predictors was also assessed through the Variance Inflation Factor (VIF). Both candidates returned VIF values of below 5, a strong indication that multicollinearity was not a concern in either model. In lieu of the research question, multicollinearity is unlikely to be a major concern as these predictors capture distinct phenomena that measure different social mechanisms. Also, predictors that were already expressed as a percentage of a population removes the common size factor that would otherwise cause co-linearity in cross-country data. 
+
+**Model 6** is **Model 5** with an additional observation: Before transforming the population variable, the residual vs. leverage plot exhibited several points with high leverage. This would indicate influence on the fitted line to stray from the population line. As a result, a logarithmic transformation was applied on the population predictor here. This transformation substantially reduced the number and magnitude of bad  high-leverage points and indicates that the model became less sensitive to extreme values in the predictors. 
+
+
+Table 5: Diagnostic metrics for Models 5 and 6
+
+| Metric       | Model 5   | Model 6   |
+|--------------|-----------|-----------|
+| $R^2$          | 0.4209    | 0.4249    |
+| Adjusted $R^2$  | 0.4188    | 0.4288    |
+| AIC          | 8085.524  | 8074.323  |
+| BIC          | 8128.788  | 8117.587  |
+
+Table 6: Explanation of transformed variables
+
+| Transformation | Variable(s) | Motivation |
+|----------------|-------------|------------|
+| Box–Cox $(\lambda \approx 0.101)$ | Response: `GDP`  | Heavy right-skew and non-constant variance in raw GDP; log-like Box–Cox stabilizes variance and improves normality. |
+| Quadratic term | `Polio²`, `Schooling²`, `Total.expenditure²` | Scatterplots showed curvature; adding a squared term captures diminishing returns visible in the data. |
+| Log scale | Population to log(Population) | Original residual-vs-leverage plot had extreme leverage for the largest countries; the log scale compresses the range and removes those high-influence points without discarding data. |
+
+All other predictors remained on their natural scale because residual plots and VIF values (< 5) did not indicate further non-linearity or multicollinearity problems.
+
+
+Table 7: Influential Observations and Outliers
+| Detection Tool          | Flagged IDs       | Action Taken|
+|-------------------------|-------------------|----------------------------------------|
+| Leverage (`hatvalues`)  | 126, 2121, 92, 1233| High-leverage points detected. **Retained** if not extreme, as removal caused curvature and worsened model fit — suggesting genuine structure.       |
+| Cook’s Distance         | 126, 2121, 92, 1233| Points showed influence on the fitted line. **Reviewed** alongside other diagnostics.                                                               |
+| DFFITS                  | 126, 2121, 92, 1233| Consistent with Cook’s D. Points flagged for high impact on predicted values. **Kept** unless they also violated residual assumptions.               |
+| Studentized Residuals   | Same as above      | Observations with \|residual\| > 4 considered **outliers**. These were **removed**, likely due to data entry issues or extreme geopolitical context. |
+
+After removal of the clear outliers, diagnostics (Figure 3 & 4) showed homoscedastic residuals and no further influential cases above conventional cut-offs.
+
+Table 9: ANOVA Table
+
+| Predictor            | Df | Sum Sq  | Mean Sq | F value  | Pr$(>F)$        |
+|----------------------|----|---------|---------|----------|----------------|
+| Status               | 1  | 3194.3  | 3194.3  | 584.3467 | 2.2e-16 |
+| Total expenditure$^2$   | 1  | 308.6   | 308.6   | 52.9796  | 5.7e-13   |
+| Polio                | 1  | 682.4   | 682.4   | 117.1461 | 2.2e-16 |
+| $log$-population       | 1  | 10.3    | 10.3    | 1.7096   | 0.1836        |
+| Income composition   | 1  | 4114.7  | 4114.7  | 706.3467 | 2.2e-16 |
+| Schooling$^2$           | 1  | 75.9    | 75.9    | 13.0305  | 0.000317      |
+| Residuals            | 1416 | 8248.6    | 5.8  | —        | —             |
+
+In addition to examining diagnostic plots, overall fit and complexity of the final two models were evaluated with certain metrics. **Model 6** has a larger Adjusted $R^2$ value and smaller AIC and BIC values. To assess the influence of individual observations, Cook’s distance, difference in fits (DFFITS) and leverage values were examined. Removing outliers improved the normality and homoscedasticity of residuals $(126, 2121, 92, 1233)$.  However removing  high leverage or high influence points led to curvature in the residuals vs fitted plot and deviations from normality in the Q-Q plot. This suggests that these points may contain genuine structure in the data necessary for the model to adequately capture relationships. Therefore, we decided to only remove clear outliers based on standardized residuals, while retaining leverage and influential points.
+
+Based on best meeting these criteria, and solving violation assumptions, **Model 6** is our final model for inference and interpretation of GDP by health and socioeconomic predictors. 
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+#Model 0 from preliminary
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
 all_data$Status <- as.factor(all_data$Status)
@@ -226,7 +455,7 @@ hist(all_data$Polio)
 hist(all_data$Total.expenditure)
 hist(all_data$Income.composition.of.resources)
 
-# Cleaned full model
+
 #### This is the original model #######
 full_model <- lm(GDP ~ Life.expectancy + Status + Adult.Mortality + 
                    infant.deaths + Alcohol + Total.expenditure + percentage.expenditure+
@@ -241,7 +470,7 @@ step_model <- step(full_model, direction = "both")
 summary(step_model)
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 all_data <- read.csv("life_expectancy.csv")
 all_data <- na.omit(all_data)
@@ -255,7 +484,9 @@ summary(model1)
 
 par(mfrow = c(2, 2))
 plot(model1)
+```
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ## model2 replace percentage expenditure with population for meaningful interpretation of model coefficients
 
 model2 <- lm(GDP ~ Status + Total.expenditure + Polio + Population + Income.composition.of.resources
@@ -264,7 +495,9 @@ summary(model2)
 
 par(mfrow = c(2, 2))
 plot(model2)
+```
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ## Model 3 Box_Cox tansformed response variable y
 
 bc <- boxcox(model2, plotit = TRUE)
@@ -279,8 +512,9 @@ summary(model3)
 
 par(mfrow = c(2, 2))
 plot(model3)
+```
 
-
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Model 4 Only squared Polio and Income
 
 model4 <- lm(GDP ~ Status + Total.expenditure
@@ -290,8 +524,9 @@ summary(model4)
 
 par(mfrow = c(2, 2))
 plot(model4)
+```
 
-
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Model 5 Combination of box-cox and squared
 
 model5 <- lm(bc_GDP ~ Status + Total.expenditure + I(Polio^2)
@@ -303,8 +538,9 @@ summary(model5)
 
 par(mfrow = c(2, 2))
 plot(model5)
+```
 
-
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Model 6 (Final Model)
 # the best model when combine box-cox and squared
 
@@ -347,7 +583,9 @@ abline(h=0,col="blue",lwd=2)
 
 ## QQ plot
 qqnorm(mod.sresid); qqline(mod.sresid)
+```
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ## check leverage point/ influential point/ outliers
 
 ## Leverage points
@@ -387,7 +625,9 @@ cutoff.dffits <- 2*sqrt(7/nrow(all_data))
 abline(h=cutoff.dffits,col="red")
 abline(h=-cutoff.dffits,col="red")
 which(abs(mod.dffits)>cutoff.dffits)
+```
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ## remove outliers
 
 remove_invalid <- unique(c(
@@ -406,6 +646,17 @@ clean_model6 <- lm(bc_GDP ~ Status
              + I(Schooling^2),
              data = clean_data6)
 summary(clean_model6)
-
+anova(clean_model6)
 par(mfrow = c(2, 2))
 plot(clean_model6)
+```
+
+
+# Final model inference and results 
+
+# Discussion and conclusion `
+
+# Author contributions
+
+# References 
+
