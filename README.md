@@ -18,5 +18,3 @@ First draft (pdf):
 
 Code (R Markdown): 
 [preliminary_model.Rmd](preliminary_model.Rmd)
-
-
