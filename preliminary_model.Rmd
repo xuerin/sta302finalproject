@@ -33,10 +33,6 @@ While the dataset was initially intended to examine factors affecting life expec
 
 Multiple linear regression is an appropriate method for analysis, as the data set consists of independent observations and the model assumes normally distributed residuals, which can be evaluated through diagnostic procedures.  
 
-GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
-
-GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP. 
-
 \
 Table 1: Variables used in the model
 
@@ -50,16 +46,20 @@ Table 1: Variables used in the model
 | Income composition of resources| Human Development Index in terms of income composition (index from 0 to 1)     |
 | Schooling                      | Number of years of schooling (years)                                           |
 
+
+GDP increases with higher schooling, income composition, and population, though with some spread. Percentage expenditure and polio demonstrate weaker positive trends. Education and income equality appear more strongly linked to economic growth than health spending.  
+
+GDP, percentage expenditure, and population are right-skewed, with mostly low values and a few extreme highs. Schooling and income composition are left-skewed, clustering at the high end. Polio rates are highly left-skewed. These patterns demonstrate how the predictors vary and help explain differences in GDP. 
 Table 2: Continuous variables summary
 
 | Variable                         |   Mean   |   Std   |   Min   |   Q1   | Median |   Q3   |   Max    |
 |----------------------------------|----------|---------|---------|--------|--------|--------|----------|
-| GDP                              | 7284.31  | 14027.92| 1.68    | 1400.69| 2654.32| 6891.00| 119172.74|
-| Percentage expenditure           | 4.28     | 3.76    | 0.01    | 1.32   | 3.45   | 6.33   | 87.60    |
-| Polio                            | 82.53    | 23.58   | 0.00    | 78.00  | 91.00  | 97.00  | 100.00   |
-| Population                       | 3.38e+07 | 1.19e+08| 366.00  | 3.35e+06|1.26e+07|3.88e+07|1.36e+09  |
-| Income composition of resources  | 0.63     | 0.15    | 0.00    | 0.54   | 0.67   | 0.76   | 0.95     |
-| Schooling                        | 10.30    | 2.98    | 0.00    | 8.00   | 10.30  | 12.43  | 20.00    |
+| GDP                              | 7483.16  | 14270.17| 1.68    | 463.94 |1766.95| 5910.81| 119172.74|
+| Percentage expenditure           | 738.25   | 1987.91 | 0.01    | 4.69   | 64.91  |441.53  |19479.91  |
+| Polio                            | 82.55    | 23.43   | 3.00    | 78.00  | 93.00  | 97.00  |99.00   |
+| Population                       | 1.28e+07 | 6.10e+07| 34.00   | 1.96e+05|1.39e+06|7.42e+06|1.29e+09  |
+| Income composition of resources  | 0.63     | 0.21    | 0.00    | 0.49   | 0.68   | 0.78   | 0.95     |
+| Schooling                        | 11.99    | 3.36    | 0.00    | 10.10   | 12.30  | 14.30  | 20.70    |
 
 Table 3: Status (categorical variable) frequency
 
