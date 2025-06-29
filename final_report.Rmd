@@ -669,8 +669,8 @@ The final regression model consists of six predictors which were selected and tr
 With Box-Cox transformation parameter $\lambda = 0.101$, the estimated model is:
 \begin{align*}
 \widehat{Y}^{(0.101)} &= \frac{\widehat{Y}^{0.101} - 1}{0.101} \\
-&= \beta_0 + \beta_1 X_{\text{Status}} + \beta_2 X_{\text{TotalExpenditure}}^2 + \beta_3 X_{\text{Polio}} \\
-&\quad + \beta_4 \log(X_{\text{Population}}) + \beta_5 X_{\text{IncomeCompositionofResources}} + \beta_6 X_{\text{Schooling}}^2 + \varepsilon
+&= \hat{\beta_0} + hat{\beta_1} X_{\text{Status}} + \hat{\beta_2} X_{\text{TotalExpenditure}}^2 + \hat{\beta_3} X_{\text{Polio}} \\
+&\quad + \hat{\beta_4} \log(X_{\text{Population}}) + \hat{\beta_5} X_{\text{IncomeCompositionofResources}} + \hat{\beta_6} X_{\text{Schooling}}^2 + \varepsilon
 \end{align*}
 
 \
@@ -756,7 +756,7 @@ Our analysis suggests that improving education and making income distribution fa
 While spending on health and immunization did not show a strong direct effect on GDP in our results, these areas are still important for the well-being of a country’s population and may influence growth in ways our model didn’t capture. For this reason, we suggest not overlooking investments in public health. Lastly, we encourage policymakers to look at the bigger picture by considering a range of social and economic factors and to support better, more reliable data collection for future studies.  
 
 ### Improvements:
-There are several ways our analysis could be improved in future studies. First, including more variables, for example, political stability, infrastructure, technological progress, or even cultural differences, could demonstrate a fuller picture of what drives economic growth. Another way to improve would be to try out different types of statistical models, not just linear regression, to see if they capture relationships between variables better. Finally, making sure data from different countries is as consistent and accurate as possible will help strengthen the findings.
+There are several ways our analysis could be improved in future studies. First, including more variables, for example, political stability, infrastructure, technological progress, or even cultural differences, could demonstrate a fuller picture of what drives economic growth. Another way is to model with different types of statistical models, not just linear regression, to see if they capture relationships between variables better. Multivariate, or vector-on-vector, regression could be useful to model and compare the GDP of specific buckets of countries. This is useful as the UN naturally groups certain countries together by income, and the habits of each groups remain very different. Underfitting our model because of this was a problem we faced in our discussion on parameter selection and outliers. This would explain GDP more contextually and provide a tailored analysis for different groups from certain predictors. Finally, ensuring datasets from different countries to be as consistent and accurate as possible will help strengthen model realizations. 
 	
 In conclusion, our analysis demonstrates that education and income composition are the two most important factors associated with a country's GDP per capita. Countries with higher education levels and more equitable income distribution tend to have better economic performance. In contrast, when education and income are taken into account, factors such as health spending, population size, and immunization rates do not have a significant direct impact on GDP. While our results highlight the key role of human capital and equitable growth in economic development, they are subject to some limitations in the data and analysis. Future research with more comprehensive data and additional variables could help provide a deeper understanding of the complex factors that influence economic growth.  
 
